@@ -4299,16 +4299,10 @@ packages:
 - pypi: ./
   name: jupyterdiana
   version: 0.1.0
-  sha256: 413c3d1c99b2b11f37cb50fba912e78cf7007314c4bb7b4e1133648d35b31683
+  sha256: 219f209629aa9bc91c083894c6d8047610145f7f247c8a2484ca612ec1b3fbe3
   requires_dist:
   - jupyter-server>=2.4.0,<3
   - pyarrow>=22.0
-  - jupyterlab>=4 ; extra == 'dev'
-  - coverage ; extra == 'test'
-  - pytest ; extra == 'test'
-  - pytest-asyncio ; extra == 'test'
-  - pytest-cov ; extra == 'test'
-  - pytest-jupyter[server]>=0.6.0 ; extra == 'test'
   requires_python: '>=3.9'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.5.0-pyhd8ed1ab_0.conda
