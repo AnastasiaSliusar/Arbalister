@@ -5,17 +5,38 @@ import { Panel } from "@lumino/widgets";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
 import type * as DataGridModule from "@lumino/datagrid";
 
+import { tableFromArrays } from "apache-arrow";
+import type * as Arrow from "apache-arrow";
+
 export class ArrowModel extends DataModel {
+  constructor() {
+    super();
+
+    const rainAmounts = Float32Array.from({ length: 2000 }, () =>
+      Number((Math.random() * 20).toFixed(1)),
+    );
+
+    const rainDates = Array.from(
+      { length: 2000 },
+      (_, i) => new Date(Date.now() - 1000 * 60 * 60 * 24 * i),
+    );
+
+    this.data_ = tableFromArrays({
+      precipitation: rainAmounts,
+      date: rainDates,
+    });
+  }
+
   columnCount(region: DataModel.ColumnRegion): number {
     if (region === "body") {
-      return 3_000;
+      return this.data_.numCols;
     }
     return 1;
   }
 
   rowCount(region: DataModel.RowRegion): number {
     if (region === "body") {
-      return 3_000_000;
+      return this.data_.numRows;
     }
     return 1;
   }
@@ -23,9 +44,9 @@ export class ArrowModel extends DataModel {
   data(region: DataModel.CellRegion, row: number, column: number): string {
     switch (region) {
       case "body":
-        return `cell(${row}, ${column})`;
+        return this.data_.getChildAt(column)?.get(row).toString();
       case "column-header":
-        return `column ${column}`;
+        return this.data_.schema.names[column].toString();
       case "row-header":
         return row.toString();
       case "corner-header":
@@ -34,6 +55,8 @@ export class ArrowModel extends DataModel {
         throw "unreachable";
     }
   }
+
+  private data_: Arrow.Table;
 }
 
 const ARROW_GRID_CSS = "arrow-grid-viewer";
