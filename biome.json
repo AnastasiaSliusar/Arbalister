@@ -20,17 +20,11 @@
             "groups": [
               {
                 "type": false,
-                "source": [
-                  "@jupyterlab/**",
-                  "@lumino/**"
-                ]
+                "source": ["@jupyterlab/**", "@lumino/**"]
               },
               {
                 "type": true,
-                "source": [
-                  "@jupyterlab/**",
-                  "@lumino/**"
-                ]
+                "source": ["@jupyterlab/**", "@lumino/**"]
               },
               ":BLANK_LINE:",
               {
@@ -66,7 +60,8 @@
     "enabled": true,
     "rules": {
       "style": {
-        "noDefaultExport": "off"
+        "noDefaultExport": "off",
+        "noNonNullAssertion": "off"
       },
       "suspicious": {
         "noConsole": "off"
