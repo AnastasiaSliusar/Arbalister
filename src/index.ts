@@ -1,39 +1,8 @@
 import { ILayoutRestorer } from "@jupyterlab/application";
 import { ICommandPalette, MainAreaWidget, WidgetTracker } from "@jupyterlab/apputils";
-import { DataGrid } from "@lumino/datagrid";
-import { Panel } from "@lumino/widgets";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
-import type * as DataGridModule from "@lumino/datagrid";
 
-import { ArrowModel } from "./model";
-
-const ARROW_GRID_CSS = "arrow-grid-viewer";
-const ARROW_VIEWER_CSS = "arrow-viewer";
-
-class ArrowGridViewer extends Panel {
-  constructor() {
-    super();
-    this.addClass(ARROW_VIEWER_CSS);
-
-    this._grid = new DataGrid({
-      defaultSizes: {
-        rowHeight: 24,
-        columnWidth: 144,
-        rowHeaderWidth: 64,
-        columnHeaderHeight: 36,
-      },
-    });
-    this._grid.addClass(ARROW_GRID_CSS);
-    this.addWidget(this._grid);
-    this.updateGrid();
-  }
-
-  async updateGrid() {
-    this._grid.dataModel = await ArrowModel.fetch("data/gen/test.parquet");
-  }
-
-  private _grid: DataGridModule.DataGrid;
-}
+import { ArrowGridViewer } from "./widget";
 
 function activate(
   app: JupyterFrontEnd,
