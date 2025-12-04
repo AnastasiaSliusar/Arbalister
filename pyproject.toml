@@ -163,10 +163,12 @@ ci = { depends-on = ["check", "test"] }
 
 [tool.pixi.feature.test.tasks.gen-data]
 cmd = """
-python data/generate.py --output-file data/gen/test.csv --num-rows 100000 && \
-python data/generate.py --output-file data/gen/test.parquet --num-rows 1000000 && \
-python data/generate.py --output-file data/gen/test.orc --num-rows 1000000 && \
-python data/generate.py --output-file data/gen/test.ipc --num-rows 1000000
+python data/generate.py batch \
+    --num-rows 1_000_000 \
+    -o data/gen/test.csv \
+    -o data/gen/test.parquet \
+    -o data/gen/test.orc \
+    -o data/gen/test.ipc \
 """
 outputs = ["data/gen/**/*"]
 
