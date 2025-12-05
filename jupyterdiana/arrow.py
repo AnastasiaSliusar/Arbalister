@@ -1,8 +1,8 @@
 import enum
 import pathlib
-from typing import Callable, Self
+from typing import Any, Callable, Self
 
-import pyarrow as pa
+import datafusion as dtfn
 
 
 class FileFormat(enum.Enum):
@@ -14,10 +14,10 @@ class FileFormat(enum.Enum):
 
     """
 
-    Csv = enum.auto()
-    Parquet = enum.auto()
-    Ipc = enum.auto()
-    Orc = enum.auto()
+    Csv = "csv"
+    Parquet = "parquet"
+    Ipc = "ipc"
+    Orc = "orc"
 
     @classmethod
     def from_filename(cls, file: pathlib.Path | str) -> Self:
@@ -36,29 +36,43 @@ class FileFormat(enum.Enum):
                 raise ValueError(f"Unknown file type {file_type}")
 
 
-ReadCallable = Callable[..., pa.Table]
+ReadCallable = Callable[..., dtfn.DataFrame]
 
 
 def get_table_reader(format: FileFormat) -> ReadCallable:
-    """Get the arrow reader factory function for the given format."""
+    """Get the datafusion reader factory function for the given format."""
+    # TODO: datafusion >= 50.0
+    #  def read(ctx: dtfn.SessionContext, path: str | pathlib.Path, *args, **kwargs) -> dtfn.DataFrame:
+    #      ds = pads.dataset(source=path, format=format.value)
+    #      return ctx.read_table(ds, *args, **kwargs)
     out: ReadCallable
     match format:
         case FileFormat.Csv:
-            import pyarrow.csv
-
-            out = pyarrow.csv.read_csv
+            out = dtfn.SessionContext.read_csv
         case FileFormat.Parquet:
-            import pyarrow.parquet
-
-            out = pyarrow.parquet.read_table
+            out = dtfn.SessionContext.read_parquet
         case FileFormat.Ipc:
             import pyarrow.feather
 
-            out = pyarrow.feather.read_table
+            def read_ipc(
+                ctx: dtfn.SessionContext, path: str | pathlib.Path, **kwargs: dict[str, Any]
+            ) -> dtfn.DataFrame:
+                #  table = pyarrow.feather.read_table(path, {**{"memory_map": True}, **kwargs})
+                table = pyarrow.feather.read_table(path, **kwargs)
+                return ctx.from_arrow(table)
+
+            out = read_ipc
         case FileFormat.Orc:
             import pyarrow.orc
 
-            out = pyarrow.orc.read_table
+            def read_orc(
+                ctx: dtfn.SessionContext, path: str | pathlib.Path, **kwargs: dict[str, Any]
+            ) -> dtfn.DataFrame:
+                table = pyarrow.orc.read_table(path, **kwargs)
+                return ctx.from_arrow(table)
+
+            out = read_orc
+
     return out
 
 
