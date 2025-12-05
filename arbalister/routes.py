@@ -9,7 +9,7 @@ import pyarrow as pa
 import tornado
 from jupyter_server.utils import url_path_join
 
-from . import arrow as ja
+from . import arrow as abw
 
 
 class IpcRouteHandler(jupyter_server.base.handlers.APIHandler):
@@ -36,8 +36,8 @@ class IpcRouteHandler(jupyter_server.base.handlers.APIHandler):
         self.set_header("Content-Type", "application/vnd.apache.arrow.stream")
 
         ctx = dtfn.SessionContext(self.datafusion_config)
-        read_table = ja.get_table_reader(format=ja.FileFormat.from_filename(file))
-        df = read_table(ctx, self.data_file)
+        read_table = abw.get_table_reader(format=abw.FileFormat.from_filename(file))
+        df = read_table(ctx, file)
         table: pa.Table = df.to_arrow_table()
 
         # TODO can we write directly to socket and send chunks

@@ -5,13 +5,13 @@ import pyarrow as pa
 import pytest
 import tornado
 
-import arbalister.arrow as ja
+import arbalister as arb
 
 
-@pytest.fixture(params=list(ja.FileFormat))
-def file_format(request: pytest.FixtureRequest) -> ja.FileFormat:
+@pytest.fixture(params=list(arb.arrow.FileFormat))
+def file_format(request: pytest.FixtureRequest) -> arb.arrow.FileFormat:
     """Parametrize the file format used in the test."""
-    out: ja.FileFormat = request.param
+    out: arb.arrow.FileFormat = request.param
     return out
 
 
@@ -27,10 +27,10 @@ def dummy_table() -> pa.Table:
 
 @pytest.fixture
 def dummy_table_file(
-    jp_root_dir: pathlib.Path, dummy_table: pa.Table, file_format: ja.FileFormat
+    jp_root_dir: pathlib.Path, dummy_table: pa.Table, file_format: arb.arrow.FileFormat
 ) -> pathlib.Path:
     """Write the dummy table to file."""
-    write_table = ja.get_table_writer(file_format)
+    write_table = arb.arrow.get_table_writer(file_format)
     table_path = jp_root_dir / f"test.{str(file_format).lower()}"
     write_table(dummy_table, table_path)
     return table_path.relative_to(jp_root_dir)
