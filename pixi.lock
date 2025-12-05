@@ -1716,6 +1716,16 @@ packages:
   - pkg:pypi/appnope?source=hash-mapping
   size: 10076
   timestamp: 1733332433806
+- pypi: ./
+  name: arbalister
+  version: 0.1.0
+  sha256: ad79ded55f06efe79ebced1940bf2cfd8c61c976e9fff2bd917b50c296fc5012
+  requires_dist:
+  - datafusion>=40.0
+  - jupyter-server>=2.4.0,<3
+  - pyarrow>=20.0
+  requires_python: '>=3.9'
+  editable: true
 - conda: https://conda.anaconda.org/conda-forge/noarch/argon2-cffi-25.1.0-pyhd8ed1ab_0.conda
   sha256: bea62005badcb98b1ae1796ec5d70ea0fc9539e7d59708ac4e7d41e2f4bb0bad
   md5: 8ac12aff0860280ee0cff7fa2cf63f3b
@@ -4349,16 +4359,6 @@ packages:
   - pkg:pypi/jupyter-server-terminals?source=hash-mapping
   size: 19711
   timestamp: 1733428049134
-- pypi: ./
-  name: jupyterdiana
-  version: 0.1.0
-  sha256: 7cc37ef553d3a40b1182c7c38cbd52726dca96d1662a66b0ee7efba64fa7d91b
-  requires_dist:
-  - datafusion>=40.0
-  - jupyter-server>=2.4.0,<3
-  - pyarrow>=20.0
-  requires_python: '>=3.9'
-  editable: true
 - conda: https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.5.0-pyhd8ed1ab_0.conda
   sha256: 6f35218db61b7c42026a14b8c6630302ebbc7624a39f1aa65b8335c3e61cb401
   md5: e6dc3d6bf1591f0ebe8e77959e950660

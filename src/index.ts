@@ -51,19 +51,17 @@ const NOOP_CONTENT_PROVIDER_ID = "noop-provider";
 
 const arrowGrid: JupyterFrontEndPlugin<void> = {
   activate: activateArrowGrid,
-  id: "@jupyterdiana/arrowgridviewer-extension:arrowgrid",
+  id: "@arbalister/arrowgridviewer-extension:arrowgrid",
   description: "Adds viewer for file that can be read into Arrow format.",
   requires: [ITranslator, IDefaultDrive],
   optional: [ILayoutRestorer],
   autoStart: true,
 };
 
-function ensureCsvFileType(
-  docRegistry: DocumentRegistry,
-): DocumentRegistry.IFileType {
+function ensureCsvFileType(docRegistry: DocumentRegistry): DocumentRegistry.IFileType {
   const name = "csv";
-  const ft =  docRegistry.getFileType(name)!;
-  if(ft){
+  const ft = docRegistry.getFileType(name)!;
+  if (ft) {
     return ft;
   }
   docRegistry.addFileType({

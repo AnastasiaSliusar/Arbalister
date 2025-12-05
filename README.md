@@ -1,11 +1,11 @@
-# jupyterdiana
+# Arbalister
 
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 
 Arrow viewer for Jupyter
 
-This extension is composed of a Python package named `jupyterdiana`
-for the server extension and a NPM package named `jupyterdiana`
+This extension is composed of a Python package named `arbalister`
+for the server extension and a NPM package named `arbalister`
 for the frontend extension.
 
 ## Requirements
@@ -17,7 +17,7 @@ for the frontend extension.
 To install the extension, execute:
 
 ```bash
-pip install jupyterdiana
+pip install arbalister
 ```
 
 ## Uninstall
@@ -25,7 +25,7 @@ pip install jupyterdiana
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterdiana
+pip uninstall arbalister
 ```
 
 ## Troubleshoot
@@ -56,7 +56,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupyterdiana directory
+# Change directory to the arbalister directory
 
 # Set up a virtual environment and install package in development mode
 python -m venv .venv
@@ -66,7 +66,7 @@ pip install --editable ".[dev,test]"
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
-jupyter server extension enable jupyterdiana
+jupyter server extension enable arbalister
 
 # Rebuild extension Typescript source after making changes
 # IMPORTANT: Unlike the steps above which are performed only once, do this step
@@ -95,13 +95,13 @@ jupyter lab build --minimize=False
 
 ```bash
 # Server extension must be manually disabled in develop mode
-jupyter server extension disable jupyterdiana
-pip uninstall jupyterdiana
+jupyter server extension disable arbalister
+pip uninstall arbalister
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupyterdiana` within that folder.
+folder is located. Then you can remove the symlink named `arbalister` within that folder.
 
 ### Testing the extension
 
@@ -120,7 +120,7 @@ jupyter labextension develop . --overwrite
 To execute them, run:
 
 ```sh
-pytest -vv -r ap --cov jupyterdiana
+pytest -vv -r ap --cov arbalister
 ```
 
 #### Frontend tests

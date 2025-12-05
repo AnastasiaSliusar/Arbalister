@@ -1,32 +1,32 @@
 [build-system]
-requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0.3.2"]
+requires = [
+  "hatchling>=1.5.0",
+  "jupyterlab>=4.0.0,<5",
+  "hatch-nodejs-version>=0.3.2",
+]
 build-backend = "hatchling.build"
 
 [project]
-name = "jupyterdiana"
+name = "arbalister"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
 classifiers = [
-    "Framework :: Jupyter",
-    "Framework :: Jupyter :: JupyterLab",
-    "Framework :: Jupyter :: JupyterLab :: 4",
-    "Framework :: Jupyter :: JupyterLab :: Extensions",
-    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
-    "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+  "Framework :: Jupyter",
+  "Framework :: Jupyter :: JupyterLab",
+  "Framework :: Jupyter :: JupyterLab :: 4",
+  "Framework :: Jupyter :: JupyterLab :: Extensions",
+  "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
-dependencies = [
-    "jupyter_server>=2.4.0,<3",
-    "pyarrow>=20.0",
-    "datafusion>=40.0",
-]
+dependencies = ["jupyter_server>=2.4.0,<3", "pyarrow>=20.0", "datafusion>=40.0"]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [tool.hatch.version]
@@ -36,25 +36,25 @@ source = "nodejs"
 fields = ["description", "authors", "urls", "keywords"]
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["jupyterdiana/labextension"]
+artifacts = ["arbalister/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterdiana/labextension" = "share/jupyter/labextensions/jupyterdiana"
-"install.json" = "share/jupyter/labextensions/jupyterdiana/install.json"
+"arbalister/labextension" = "share/jupyter/labextensions/arbalister"
+"install.json" = "share/jupyter/labextensions/arbalister/install.json"
 "jupyter-config/server-config" = "etc/jupyter/jupyter_server_config.d"
 
 [tool.hatch.build.hooks.version]
-path = "jupyterdiana/_version.py"
+path = "arbalister/_version.py"
 
 [tool.hatch.build.hooks.jupyter-builder]
 dependencies = ["hatch-jupyter-builder>=0.5"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "jupyterdiana/labextension/static/style.js",
-    "jupyterdiana/labextension/package.json",
+  "arbalister/labextension/static/style.js",
+  "arbalister/labextension/package.json",
 ]
-skip-if-exists = ["jupyterdiana/labextension/static/style.js"]
+skip-if-exists = ["arbalister/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
@@ -64,16 +64,16 @@ npm = ["jlpm"]
 build_cmd = "install:extension"
 npm = ["jlpm"]
 source_dir = "src"
-build_dir = "jupyterdiana/labextension"
+build_dir = "arbalister/labextension"
 
 [tool.jupyter-releaser.options]
 version_cmd = "hatch version"
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
-    "python -m pip install 'jupyterlab>=4.0.0,<5'",
-    "jlpm",
-    "jlpm build:prod"
+  "python -m pip install 'jupyterlab>=4.0.0,<5'",
+  "jlpm",
+  "jlpm build:prod",
 ]
 before-build-python = ["jlpm clean:all"]
 
@@ -116,7 +116,7 @@ datafusion = "*"
 nodejs = "*"
 
 [tool.pixi.pypi-dependencies]
-jupyterdiana = { path = ".", editable = true }
+arbalister = { path = ".", editable = true }
 
 [tool.pixi.feature.test.dependencies]
 coverage = "*"
@@ -136,16 +136,12 @@ faker = "*"
 # Formatters
 fmt-ruff = "ruff format"
 fmt-biome = "biome format --write"
-fmt-taplo = "taplo format"
-fmt = [
-    { task = "fmt-ruff" },
-    { task = "fmt-biome" },
-    { task = "fmt-taplo" },
-]
+fmt-taplo = "taplo format pyproject.toml"
+fmt = [{ task = "fmt-ruff" }, { task = "fmt-biome" }, { task = "fmt-taplo" }]
 # Checkers
 check-ruff = "ruff check --extend-exclude '*/jupyter_server_test_config.py' --fix --unsafe-fixes"
 check-ruff-format = "ruff format --check"
-check-mypy = "python -m mypy jupyterdiana/ data/"
+check-mypy = "python -m mypy arbalister/ data/"
 check-biome = "biome check --write --error-on-warnings"
 check-taplo-format = "taplo check"
 check-typos = "typos --write-changes"

@@ -1,5 +1,5 @@
 {
-  "name": "jupyterdiana",
+  "name": "arbalister",
   "version": "0.1.0",
   "description": "Arrow viewer for Jupyter",
   "keywords": [
@@ -38,7 +38,7 @@
     "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-    "clean:labextension": "rimraf jupyterdiana/labextension jupyterdiana/_version.py",
+    "clean:labextension": "rimraf arbalister/labextension arbalister/_version.py",
     "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
     "eslint": "jlpm eslint:check --fix",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -100,12 +100,12 @@
           "pip"
         ],
         "base": {
-          "name": "jupyterdiana"
+          "name": "arbalister"
         }
       }
     },
     "extension": true,
-    "outputDir": "jupyterdiana/labextension"
+    "outputDir": "arbalister/labextension"
   },
   "eslintIgnore": [
     "node_modules",

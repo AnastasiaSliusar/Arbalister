@@ -1,7 +1,7 @@
 {
-  "name": "jupyterdiana-ui-tests",
+  "name": "arbalister-ui-tests",
   "version": "1.0.0",
-  "description": "JupyterLab jupyterdiana Integration Tests",
+  "description": "JupyterLab arbalister Integration Tests",
   "private": true,
   "scripts": {
     "start": "jupyter lab --config jupyter_server_test_config.py",

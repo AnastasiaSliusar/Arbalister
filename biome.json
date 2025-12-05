@@ -7,7 +7,7 @@
       "!.pixi/**/*",
       "!.vscode/**/*",
       "!lib/**/*",
-      "!jupyterdiana/labextension/**/*"
+      "!arbalister/labextension/**/*"
     ]
   },
   "assist": {

@@ -7,9 +7,9 @@ has_ai_rules: false
 has_binder: false
 has_settings: false
 kind: frontend-and-server
-labextension_name: jupyterdiana
+labextension_name: arbalister
 project_short_description: Arrow viewer for Jupyter
-python_name: jupyterdiana
+python_name: arbalister
 repository: ''
 test: true
 

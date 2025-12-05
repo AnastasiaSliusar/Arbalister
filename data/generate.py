@@ -4,7 +4,7 @@ import pathlib
 import faker
 import pyarrow as pa
 
-import jupyterdiana.arrow as ja
+import arbalister.arrow as aa
 
 
 def generate_table(num_rows: int) -> pa.Table:
@@ -25,7 +25,7 @@ def configure_command_single(cmd: argparse.ArgumentParser) -> argparse.ArgumentP
     cmd.add_argument(
         "--output-type",
         "-t",
-        choices=[t.name.lower() for t in ja.FileFormat],
+        choices=[t.name.lower() for t in aa.FileFormat],
         default=None,
         help="Output file type",
     )
@@ -56,10 +56,10 @@ def configure_argparse() -> argparse.ArgumentParser:
     return parser
 
 
-def save_table(table: pa.Table, path: pathlib.Path, file_type: ja.FileFormat) -> None:
+def save_table(table: pa.Table, path: pathlib.Path, file_type: aa.FileFormat) -> None:
     """Save a table to file with the given file type."""
     path.parent.mkdir(exist_ok=True, parents=True)
-    write_table = ja.get_table_writer(file_type)
+    write_table = aa.get_table_writer(file_type)
     write_table(table, str(path))
 
 
@@ -72,13 +72,13 @@ def main() -> None:
 
     match args.command:
         case "single":
-            ft = next((t for t in ja.FileFormat if t.name.lower() == args.output_type), None)
+            ft = next((t for t in aa.FileFormat if t.name.lower() == args.output_type), None)
             if ft is None:
-                ft = ja.FileFormat.from_filename(args.output_file)
+                ft = aa.FileFormat.from_filename(args.output_file)
             save_table(table, args.output_file, ft)
         case "batch":
             for p in args.output_file:
-                ft = ja.FileFormat.from_filename(p)
+                ft = aa.FileFormat.from_filename(p)
                 save_table(table, p, ft)
 
 

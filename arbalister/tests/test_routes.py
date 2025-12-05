@@ -5,7 +5,7 @@ import pyarrow as pa
 import pytest
 import tornado
 
-import jupyterdiana.arrow as ja
+import arbalister.arrow as ja
 
 
 @pytest.fixture(params=list(ja.FileFormat))
