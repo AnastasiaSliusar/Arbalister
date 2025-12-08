@@ -193,10 +193,12 @@ function activateArrowGrid(
     }
 
     await widget.content.ready;
-     widget.content.style = style;
+    widget.content.style = style;
     widget.content.rendererConfig = rendererConfig;
 
     updateThemes();
+
+    console.log("JupyterLab extension arbalister is activated!");
   });
 
    const updateThemes = () => {

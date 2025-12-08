@@ -1,13 +1,17 @@
+# Junit reported
+**/junit*.xml
+
+# Web files
 *.bundle.*
 lib/
 node_modules/
 *.log
 .eslintcache
 .stylelintcache
-*.egg-info/
 .ipynb_checkpoints
 *.tsbuildinfo
 arbalister/labextension
+
 # Version file is handled by hatchling
 arbalister/_version.py
 
@@ -37,6 +41,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+*.egg-info/
 .eggs/
 lib/
 lib64/

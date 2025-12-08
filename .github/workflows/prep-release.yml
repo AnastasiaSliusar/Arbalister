@@ -44,5 +44,5 @@ jobs:
           since_last_stable: ${{ github.event.inputs.since_last_stable }}
 
       - name: "** Next Step **"
-        run: |
+        run: |-
           echo "Optional): Review Draft Release: ${{ steps.prep-release.outputs.release_url }}"
