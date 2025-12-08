@@ -895,6 +895,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/websocket-client-1.9.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/whatthepatch-1.0.7-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-h280c20c_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/yamlfmt-0.20.0-hfc2019e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/yapf-0.43.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zeromq-4.3.5-h387f397_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
@@ -1153,6 +1154,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/websocket-client-1.9.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/whatthepatch-1.0.7-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/yaml-0.2.5-h4132b18_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/yamlfmt-0.20.0-hccc6df8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/yapf-0.43.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/zeromq-4.3.5-h6c33b1e_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
@@ -1411,6 +1413,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/websocket-client-1.9.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/whatthepatch-1.0.7-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h925e9cb_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yamlfmt-0.20.0-h820172f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/yapf-0.43.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zeromq-4.3.5-h888dc83_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
@@ -1652,6 +1655,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/win_inet_pton-1.1.0-pyh7428d3b_8.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/winpty-0.4.3-4.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/win-64/yaml-0.2.5-h6a83c73_3.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/yamlfmt-0.20.0-h11686cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/yapf-0.43.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/zeromq-4.3.5-h5bddc39_9.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
@@ -1723,7 +1727,7 @@ packages:
 - pypi: ./
   name: arbalister
   version: 0.1.0
-  sha256: 5685e17c4c2929368bff121a1f0c25e3c7f1a10d9f7541ee8e9a97ba425473bb
+  sha256: 4a2914d2bfa1b83e94a978e1a02dabd38f3e7180072dd8da8808716e508c642f
   requires_dist:
   - datafusion>=40.0
   - jupyter-server>=2.4.0,<3
@@ -9283,6 +9287,40 @@ packages:
   purls: []
   size: 63944
   timestamp: 1753484092156
+- conda: https://conda.anaconda.org/conda-forge/linux-64/yamlfmt-0.20.0-hfc2019e_0.conda
+  sha256: 37ea6521346c6bed6b7f82a44cc69a7cb32f2880d428c3b8af8e3da200e44c7e
+  md5: 8df83429be12d6db1f7b92d9c4bb2a36
+  license: Apache-2.0
+  license_family: APACHE
+  purls: []
+  size: 1769760
+  timestamp: 1764801548832
+- conda: https://conda.anaconda.org/conda-forge/osx-64/yamlfmt-0.20.0-hccc6df8_0.conda
+  sha256: fd4a8f3ededbe467b88bb7563d004d097d4497d8cdccf1831e026bce7aeeebfc
+  md5: 8cde24633a181efbfb8b63ddb2824266
+  constrains:
+  - __osx >=10.12
+  license: Apache-2.0
+  license_family: APACHE
+  purls: []
+  size: 1790039
+  timestamp: 1764801584936
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/yamlfmt-0.20.0-h820172f_0.conda
+  sha256: c1cef6b670849c79da13360254a3faeb9f1ab2154d5f3ad736b59423bbf0cb5a
+  md5: d60225439f85a6abc7a8065d5b55750f
+  license: Apache-2.0
+  license_family: APACHE
+  purls: []
+  size: 1622540
+  timestamp: 1764801606461
+- conda: https://conda.anaconda.org/conda-forge/win-64/yamlfmt-0.20.0-h11686cb_0.conda
+  sha256: af7eceb6f8ca3d8027e1b214a539b14983220491d738af55875d13a288ca67c4
+  md5: f33cb6de5bc7d8307f09d3dd48924bc6
+  license: Apache-2.0
+  license_family: APACHE
+  purls: []
+  size: 1752131
+  timestamp: 1764801575761
 - conda: https://conda.anaconda.org/conda-forge/noarch/yapf-0.43.0-pyhd8ed1ab_1.conda
   sha256: a84c77c78445ee71813059ad960b043e334b24250900f4cec96a9ef78e45208a
   md5: ad1a2c858e3c14deae4f274580123151

@@ -28,9 +28,16 @@ repos:
         types: [python]
       - id: pixi-taplo-format
         name: "Run taplo format through pixi"
-        entry: pixi run fmt-taplo""
+        entry: pixi run fmt-taplo
         language: system
         types: [toml]
+      - id: pixi-yamlfmt-format
+        name: "Run yamfmt format through pixi"
+        entry: pixi run fmt-yamlfmt
+        language: system
+        types: [yaml]
+        pass_filenames: false
+        require_serial: true
       - id: pixi-biome-format
         name: "Run Biome format through pixi"
         entry: pixi run fmt-biome""
