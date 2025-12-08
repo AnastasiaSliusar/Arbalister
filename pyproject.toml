@@ -143,7 +143,7 @@ description = "Format Python files with ruff."
 
 [tool.pixi.feature.test.tasks.fmt-biome]
 cmd = "biome format --write"
-description = "Format JS/TS files with biome."
+description = "Format JS/TS/CSS files with biome."
 
 [tool.pixi.feature.test.tasks.fmt-yamlfmt]
 args = [{ arg = "path", default = "." }]
@@ -174,8 +174,9 @@ cmd = "python -m mypy arbalister/ data/"
 description = "Check Python typing with MyPy."
 
 [tool.pixi.feature.test.tasks.check-biome]
+# TODO Add stylelint ?
 cmd = "biome check --write --error-on-warnings"
-description = "Check JS/TS code with biome."
+description = "Check JS/TS/CSS code with biome."
 
 [tool.pixi.feature.test.tasks.check-typos]
 cmd = "typos --write-changes"
@@ -236,7 +237,7 @@ typos-lsp = "*"
 [tool.pixi.feature.dev.tasks.jlpm-install]
 cmd = "jlpm install"
 description = "Install NPM packages."
-inputs = ["package.json"]
+inputs = ["package.json", "yarn.lock"]
 outputs = [".yarn/install-state.gz"]
 
 [tool.pixi.feature.dev.tasks.install-dev]
