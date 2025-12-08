@@ -148,6 +148,8 @@ function activateArrowGrid(
   defaultDrive: Contents.IDrive,
   restorer: ILayoutRestorer | null,
 ): void {
+  console.log("Launching JupyterLab extension arbalister");
+
   const factory_arrow = "ArrowTable";
 
   const trans = translator.load("jupyterlab");
@@ -205,8 +207,6 @@ function activateArrowGrid(
     }
 
     await widget.content.ready;
-
-    console.log("JupyterLab extension arbalister is activated!");
   });
 }
 

@@ -210,9 +210,6 @@ description = "Run all tests."
 depends-on = ["check", "test"]
 description = "Run all formatters, code checks, and tests."
 
-[tool.pixi.feature.dev.activation.env]
-JUPYTERLAB_PATH = "$PIXI_PROJECT_ROOT/arbalister/labextension"
-
 [tool.pixi.feature.dev.tasks.gen-data]
 cmd = """
 python data/generate.py batch \
@@ -235,6 +232,22 @@ pylsp-mypy = ">=0.6.8"
 vscode-langservers-extracted = ">=4.10"
 typescript-language-server = ">=5.1"
 typos-lsp = "*"
+
+[tool.pixi.feature.dev.tasks.jlpm-install]
+cmd = "jlpm install"
+description = "Install NPM packages."
+inputs = ["package.json"]
+outputs = [".yarn/install-state.gz"]
+
+[tool.pixi.feature.dev.tasks.install-dev]
+depends-on = ["jlpm-install"]
+cmd = "jupyter labextension develop . --overwrite"
+description = "Install extension in developer mode."
+
+[tool.pixi.feature.dev.tasks.serve-dev]
+cmd = "jupyter lab"
+depends-on = ["install-dev"]
+description = "Launch JupyterLab with the current extension installed."
 
 [tool.pixi.feature.dev.tasks]
 jlpm = { cmd = "jlpm", description = "Run Jupyter lab package manager." }
