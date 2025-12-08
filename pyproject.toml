@@ -107,13 +107,15 @@ platforms = ["osx-64", "osx-arm64", "linux-64", "win-64"]
 [tool.pixi.environments]
 default = { solve-group = "default" }
 dev = { features = ["dev", "test"], solve-group = "default" }
+pkg = { features = ["pkg"], solve-group = "default" }
 
 [tool.pixi.dependencies]
 python = ">=3.12.3"
+nodejs = "*"
+# Duplicate pyproject dependencies to resolve them with pixi
 jupyter_server = "*"
 pyarrow = "*"
 datafusion = "*"
-nodejs = "*"
 
 [tool.pixi.pypi-dependencies]
 arbalister = { path = ".", editable = true }
@@ -240,3 +242,14 @@ jlpm-watch = "jlpm run watch"
 pre-commit = { cmd = "pre-commit", description = "Run pre-commit executable." }
 jupyter = { cmd = "jupyter", description = "Run jupyter." }
 labextension = "jupyter labextension"
+
+[tool.pixi.feature.pkg.dependencies]
+python-build = "*"
+# Override build-system
+hatchling = ">=1.5.0"
+jupyterlab = ">=4.0.0,<5"
+hatch-nodejs-version = ">=0.3.2"
+hatch-jupyter-builder = ">=0.5"
+
+[tool.pixi.feature.pkg.tasks.build]
+cmd = "python -m build -nx"
