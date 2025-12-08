@@ -1,14 +1,16 @@
 import { ILayoutRestorer } from "@jupyterlab/application";
-import { WidgetTracker } from "@jupyterlab/apputils";
+import { WidgetTracker, IThemeManager } from "@jupyterlab/apputils";
 import { IDefaultDrive } from "@jupyterlab/services";
 import { ITranslator } from "@jupyterlab/translation";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
 import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as services from "@jupyterlab/services";
 import type { Contents } from "@jupyterlab/services";
+import type { DataGrid } from '@lumino/datagrid';
 
 import { ArrowGridViewerFactory } from "./widget";
-import type { ArrowGridViewer } from "./widget";
+import type { ArrowGridViewer, ITextRenderConfig } from "./widget";
+
 
 export namespace NoOpContentProvider {
   export interface IOptions {
@@ -54,7 +56,7 @@ const arrowGrid: JupyterFrontEndPlugin<void> = {
   id: "@arbalister/arrowgridviewer-extension:arrowgrid",
   description: "Adds viewer for file that can be read into Arrow format.",
   requires: [ITranslator, IDefaultDrive],
-  optional: [ILayoutRestorer],
+  optional: [ILayoutRestorer, IThemeManager],
   autoStart: true,
 };
 
@@ -130,6 +132,7 @@ function activateArrowGrid(
   translator: ITranslator,
   defaultDrive: Contents.IDrive,
   restorer: ILayoutRestorer | null,
+  themeManager: IThemeManager | null,
 ): void {
   const factory_arrow = "ArrowTable";
 
@@ -161,6 +164,8 @@ function activateArrowGrid(
   const tracker = new WidgetTracker<IDocumentWidget<ArrowGridViewer>>({
     namespace: "arrowviewer",
   });
+  let style: DataGrid.Style = Private.LIGHT_STYLE;
+  let rendererConfig: ITextRenderConfig = Private.LIGHT_TEXT_CONFIG;
 
   if (restorer) {
     void restorer.restore(tracker, {
@@ -173,6 +178,7 @@ function activateArrowGrid(
   app.docRegistry.addWidgetFactory(factory);
 
   factory.widgetCreated.connect(async (_sender, widget) => {
+    console.log('???');
     // Track the widget.
     void tracker.add(widget);
     // Notify the widget tracker if restore data needs to update.
@@ -187,7 +193,83 @@ function activateArrowGrid(
     }
 
     await widget.content.ready;
+     widget.content.style = style;
+    widget.content.rendererConfig = rendererConfig;
+
+    updateThemes();
   });
+
+   const updateThemes = () => {
+    console.log('updateThemes');
+    const isLight =
+      themeManager && themeManager.theme
+        ? themeManager.isLight(themeManager.theme)
+        : true;
+    style = isLight ? Private.LIGHT_STYLE : Private.DARK_STYLE;
+    rendererConfig = isLight
+      ? Private.LIGHT_TEXT_CONFIG
+      : Private.DARK_TEXT_CONFIG;
+    tracker.forEach(async grid => {
+      await grid.content.ready;
+      grid.content.style = style;
+      grid.content.rendererConfig = rendererConfig;
+    });
+  };
+  if (themeManager) {
+    themeManager.themeChanged.connect(updateThemes);
+  }
 }
+
+
+/**
+ * A namespace for private data.
+ */
+namespace Private {
+  /**
+   * The light theme for the data grid.
+   */
+  export const LIGHT_STYLE: DataGrid.Style = {
+    voidColor: '#F3F3F3',
+    backgroundColor: 'white',
+    headerBackgroundColor: '#EEEEEE',
+    gridLineColor: 'rgba(20, 20, 20, 0.15)',
+    headerGridLineColor: 'rgba(20, 20, 20, 0.25)',
+    rowBackgroundColor: i => (i % 2 === 0 ? '#F5F5F5' : 'white')
+  };
+
+  /**
+   * The dark theme for the data grid.
+   */
+  export const DARK_STYLE: DataGrid.Style = {
+    voidColor: 'black',
+    backgroundColor: '#111111',
+    headerBackgroundColor: '#424242',
+    gridLineColor: 'rgba(235, 235, 235, 0.15)',
+    headerGridLineColor: 'rgba(235, 235, 235, 0.25)',
+    rowBackgroundColor: i => (i % 2 === 0 ? '#212121' : '#111111')
+  };
+
+  /**
+   * The light config for the data grid renderer.
+   */
+  export const LIGHT_TEXT_CONFIG: ITextRenderConfig = {
+    textColor: '#111111',
+    matchBackgroundColor: '#FFFFE0',
+    currentMatchBackgroundColor: '#FFFF00',
+    horizontalAlignment: 'right'
+  };
+
+  /**
+   * The dark config for the data grid renderer.
+   */
+  export const DARK_TEXT_CONFIG: ITextRenderConfig = {
+    textColor: '#F5F5F5',
+    matchBackgroundColor: '#838423',
+    currentMatchBackgroundColor: '#A3807A',
+    horizontalAlignment: 'right'
+  };
+}
+
+
 
 export default arrowGrid;

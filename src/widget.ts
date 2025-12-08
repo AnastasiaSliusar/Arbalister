@@ -14,6 +14,8 @@ export namespace ArrowGridViewer {
 }
 
 export class ArrowGridViewer extends Panel {
+  style: DataGrid.Style | undefined;
+  rendererConfig: ITextRenderConfig | undefined;
   constructor(options: ArrowGridViewer.IOptions) {
     super();
     this._options = options;
@@ -92,4 +94,23 @@ export class ArrowGridViewerFactory extends ABCWidgetFactory<IDocumentWidget<Arr
     const translator = this.translator;
     return new ArrowGridDocumentWidget({ context, translator });
   }
+}
+
+export interface ITextRenderConfig {
+  /**
+   * default text color
+   */
+  textColor: string;
+  /**
+   * background color for a search match
+   */
+  matchBackgroundColor: string;
+  /**
+   * background color for the current search match.
+   */
+  currentMatchBackgroundColor: string;
+  /**
+   * horizontalAlignment of the text
+   */
+  horizontalAlignment: DataGridModule.TextRenderer.HorizontalAlignment;
 }
