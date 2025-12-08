@@ -26,6 +26,7 @@ repos:
         entry: pixi run fmt-ruff
         language: system
         types: [python]
+        exclude: "arbalister/_version.py"
       - id: pixi-taplo-format
         name: "Run taplo format through pixi"
         entry: pixi run fmt-taplo
@@ -55,7 +56,7 @@ repos:
         entry: pixi run check-ruff
         language: system
         types: [python]
-        exclude: ".*/jupyter_server_test_config\\.py$"
+        exclude: "^.*/jupyter_server_test_config\\.py$|^arbalister/_version.py$"
       - id: pixi-typos
         name: "Run typos through pixi"
         entry: pixi run check-typos
