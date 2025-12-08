@@ -170,6 +170,9 @@ python data/generate.py batch \
 """
 outputs = ["data/gen/**/*"]
 
+[tool.pixi.feature.dev.activation.env]
+JUPYTERLAB_PATH = "$PIXI_PROJECT_ROOT/arbalister/labextension"
+
 [tool.pixi.feature.dev.dependencies]
 jupyterlab = ">=4.4"
 jupyterlab-lsp = "*"
@@ -186,4 +189,4 @@ jlpm-build = "jlpm run build"
 jlpm-watch = "jlpm run watch"
 pre-commit = "pre-commit"
 labextension = "jupyter labextension"
-develop = "jupyter labextension develop --overwrite ."
+jupyter = "jupyter"
