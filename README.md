@@ -2,11 +2,15 @@
 
 [![Github Actions Status](https://github.com/QuantStack/Arbalister/workflows/Build/badge.svg)](https://github.com/QuantStack/Arbalister/actions/workflows/build.yml)
 
-Arrow viewer for Jupyter
+This viewer lets you double click on many file types supported in the Apache Arrow ecosystem
+to automatically view it as tabular data (Csv, Parquet, Avro, Orc, Ipc).
 
-This extension is composed of a Python package named `arbalister`
-for the server extension and a NPM package named `arbalister`
-for the frontend extension.
+For library authors, the server extension serves files in the Arrow IPC stream format.
+It can be reused to provide other type of application specific viewers (*e.g.* as time series, ...).
+
+This extension is composed two packages both called `arbalister`:
+- A Python server extension available on PyPI;
+- A Typescript client extension available on NPM.
 
 ## Requirements
 
