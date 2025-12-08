@@ -155,7 +155,8 @@ check = [
 ]
 # Tests
 test-pytest = "python -m pytest"
-test = { depends-on = ["test-pytest"] }
+test-jest = "npx --no jest --coverage"
+test = { depends-on = ["test-pytest", "test-jest"] }
 # All
 ci = { depends-on = ["check", "test"] }
 
