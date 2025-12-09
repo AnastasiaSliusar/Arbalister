@@ -4,8 +4,28 @@ import { BasicKeyHandler, BasicMouseHandler, DataGrid } from "@lumino/datagrid";
 import { Panel } from "@lumino/widgets";
 import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as DataGridModule from "@lumino/datagrid";
+import { TextRenderer } from "@lumino/datagrid";
 
 import { ArrowModel } from "./model";
+
+export class TextRenderConfig {
+  /**
+   * default text color
+   */
+  textColor: string = '';
+  /**
+   * background color for a search match
+   */
+  matchBackgroundColor: string = '';
+  /**
+   * background color for the current search match.
+   */
+  currentMatchBackgroundColor: string = '';
+  /**
+   * horizontalAlignment of the text
+   */
+  horizontalAlignment: DataGridModule.TextRenderer.HorizontalAlignment | undefined;
+}
 
 export namespace ArrowGridViewer {
   export interface IOptions {
@@ -14,8 +34,6 @@ export namespace ArrowGridViewer {
 }
 
 export class ArrowGridViewer extends Panel {
-  style: DataGrid.Style | undefined;
-  rendererConfig: ITextRenderConfig | undefined;
   constructor(options: ArrowGridViewer.IOptions) {
     super();
     this._options = options;
@@ -50,7 +68,26 @@ export class ArrowGridViewer extends Panel {
     return this._options.path;
   }
 
+  /**
+   * The style used by the data grid.
+   */
+  get style(): DataGridModule.DataGrid.Style {
+    return this._grid.style;
+  }
+  set style(value: DataGridModule.DataGrid.Style) {
+    this._grid.style = { ...this._defaultStyle, ...value };
+  }
+
+  /**
+   * The config used to create text renderer.
+   */
+  set rendererConfig(rendererConfig: ITextRenderConfig) {
+    this._baseRenderer = rendererConfig;
+    void this._updateRenderer();
+  }
+
   protected async initialize(): Promise<void> {
+    this._defaultStyle = DataGrid.defaultStyle;
     await this._updateGrid();
     this._revealed.resolve(undefined);
   }
@@ -61,10 +98,32 @@ export class ArrowGridViewer extends Panel {
     this._grid.dataModel = model;
   }
 
+   private async _updateRenderer(): Promise<void> {
+    if (this._baseRenderer === null) {
+      return;
+    }
+    const rendererConfig = this._baseRenderer;
+    const renderer = new TextRenderer({
+      textColor: rendererConfig.textColor,
+      horizontalAlignment: rendererConfig.horizontalAlignment
+    });
+
+    
+    this._grid.cellRenderers.update({
+      body: renderer,
+      'column-header': renderer,
+      'corner-header': renderer,
+      'row-header': renderer
+    });
+  }
+
+
   private _options: ArrowGridViewer.IOptions;
   private _grid: DataGridModule.DataGrid;
   private _revealed = new PromiseDelegate<void>();
   private _ready: Promise<void>;
+  private _baseRenderer: ITextRenderConfig | null = null;
+  private _defaultStyle: typeof DataGridModule.DataGrid.defaultStyle | undefined;
 }
 
 export namespace ArrowGridDocumentWidget {

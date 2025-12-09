@@ -17,6 +17,8 @@ export namespace NoOpContentProvider {
   }
 }
 
+
+
 export class NoOpContentProvider implements services.IContentProvider {
   constructor(options: NoOpContentProvider.IOptions) {
     this._currentDrive = options.currentDrive;
@@ -210,7 +212,6 @@ function activateArrowGrid(
       widget.title.iconClass = csv_ft.iconClass!;
       widget.title.iconLabel = csv_ft.iconLabel!;
     }
-
     await widget.content.ready;
     widget.content.style = style;
     widget.content.rendererConfig = rendererConfig;
@@ -220,20 +221,25 @@ function activateArrowGrid(
     console.log("JupyterLab extension arbalister is activated!");
   });
 
-  const updateThemes = () => {
+  const updateThemes = (newTheme?: string | null) => {
     console.log("updateThemes");
-    const isLight =
-      themeManager && themeManager.theme ? themeManager.isLight(themeManager.theme) : true;
+    const isLight = themeManager?.isLight(newTheme as string ?? themeManager.theme) ?? true;
+    console.log('isLight', isLight);
     style = isLight ? Private.LIGHT_STYLE : Private.DARK_STYLE;
     rendererConfig = isLight ? Private.LIGHT_TEXT_CONFIG : Private.DARK_TEXT_CONFIG;
-    tracker.forEach(async (grid) => {
-      await grid.content.ready;
-      grid.content.style = style;
-      grid.content.rendererConfig = rendererConfig;
+    tracker.forEach(async (widget) => {
+      await widget.content.ready;
+      widget.content.style = style;
+      widget.content.rendererConfig = rendererConfig;
+      
     });
   };
   if (themeManager) {
-    themeManager.themeChanged.connect(updateThemes);
+    themeManager.themeChanged.connect((_, args)=>{
+      const newTheme = args.newValue;
+      console.log('newTheme',newTheme);
+      updateThemes(newTheme);
+    });
   }
 }
 
