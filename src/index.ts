@@ -17,8 +17,6 @@ export namespace NoOpContentProvider {
   }
 }
 
-
-
 export class NoOpContentProvider implements services.IContentProvider {
   constructor(options: NoOpContentProvider.IOptions) {
     this._currentDrive = options.currentDrive;
@@ -221,7 +219,7 @@ function activateArrowGrid(
   });
 
   const updateThemes = (newTheme?: string | null) => {
-    const themeName = newTheme ? newTheme as string : themeManager?.theme;
+    const themeName = newTheme ? (newTheme as string) : themeManager?.theme;
     const isLight = themeManager?.isLight(themeName as string) ?? true;
     style = isLight ? Private.LIGHT_STYLE : Private.DARK_STYLE;
     rendererConfig = isLight ? Private.LIGHT_TEXT_CONFIG : Private.DARK_TEXT_CONFIG;
@@ -229,11 +227,10 @@ function activateArrowGrid(
       await widget.content.ready;
       widget.content.style = style;
       widget.content.rendererConfig = rendererConfig;
-      
     });
   };
   if (themeManager) {
-    themeManager.themeChanged.connect((_, args)=>{
+    themeManager.themeChanged.connect((_, args) => {
       const newTheme = args.newValue;
       updateThemes(newTheme);
     });

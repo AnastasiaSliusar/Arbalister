@@ -12,15 +12,15 @@ export class TextRenderConfig {
   /**
    * default text color
    */
-  textColor: string = '';
+  textColor: string = "";
   /**
    * background color for a search match
    */
-  matchBackgroundColor: string = '';
+  matchBackgroundColor: string = "";
   /**
    * background color for the current search match.
    */
-  currentMatchBackgroundColor: string = '';
+  currentMatchBackgroundColor: string = "";
   /**
    * horizontalAlignment of the text
    */
@@ -98,25 +98,23 @@ export class ArrowGridViewer extends Panel {
     this._grid.dataModel = model;
   }
 
-   private async _updateRenderer(): Promise<void> {
+  private async _updateRenderer(): Promise<void> {
     if (this._baseRenderer === null) {
       return;
     }
     const rendererConfig = this._baseRenderer;
     const renderer = new TextRenderer({
       textColor: rendererConfig.textColor,
-      horizontalAlignment: rendererConfig.horizontalAlignment
+      horizontalAlignment: rendererConfig.horizontalAlignment,
     });
 
-    
     this._grid.cellRenderers.update({
       body: renderer,
-      'column-header': renderer,
-      'corner-header': renderer,
-      'row-header': renderer
+      "column-header": renderer,
+      "corner-header": renderer,
+      "row-header": renderer,
     });
   }
-
 
   private _options: ArrowGridViewer.IOptions;
   private _grid: DataGridModule.DataGrid;
