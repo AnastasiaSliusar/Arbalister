@@ -275,7 +275,7 @@ namespace Private {
     textColor: "#111111",
     matchBackgroundColor: "#FFFFE0",
     currentMatchBackgroundColor: "#FFFF00",
-    horizontalAlignment: "right",
+    horizontalAlignment: "left",
   };
 
   /**
@@ -285,7 +285,7 @@ namespace Private {
     textColor: "#F5F5F5",
     matchBackgroundColor: "#838423",
     currentMatchBackgroundColor: "#A3807A",
-    horizontalAlignment: "right",
+    horizontalAlignment: "left",
   };
 }
 
