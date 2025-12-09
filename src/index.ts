@@ -199,7 +199,6 @@ function activateArrowGrid(
   app.docRegistry.addWidgetFactory(factory);
 
   factory.widgetCreated.connect(async (_sender, widget) => {
-    console.log("???");
     // Track the widget.
     void tracker.add(widget);
     // Notify the widget tracker if restore data needs to update.
@@ -222,9 +221,8 @@ function activateArrowGrid(
   });
 
   const updateThemes = (newTheme?: string | null) => {
-    console.log("updateThemes");
-    const isLight = themeManager?.isLight(newTheme as string ?? themeManager.theme) ?? true;
-    console.log('isLight', isLight);
+    const themeName = newTheme ? newTheme as string : themeManager?.theme;
+    const isLight = themeManager?.isLight(themeName as string) ?? true;
     style = isLight ? Private.LIGHT_STYLE : Private.DARK_STYLE;
     rendererConfig = isLight ? Private.LIGHT_TEXT_CONFIG : Private.DARK_TEXT_CONFIG;
     tracker.forEach(async (widget) => {
@@ -237,7 +235,6 @@ function activateArrowGrid(
   if (themeManager) {
     themeManager.themeChanged.connect((_, args)=>{
       const newTheme = args.newValue;
-      console.log('newTheme',newTheme);
       updateThemes(newTheme);
     });
   }
