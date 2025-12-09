@@ -1,31 +1,11 @@
 import { ABCWidgetFactory, DocumentWidget } from "@jupyterlab/docregistry";
 import { PromiseDelegate } from "@lumino/coreutils";
-import { BasicKeyHandler, BasicMouseHandler, DataGrid } from "@lumino/datagrid";
+import { BasicKeyHandler, BasicMouseHandler, DataGrid, TextRenderer } from "@lumino/datagrid";
 import { Panel } from "@lumino/widgets";
 import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as DataGridModule from "@lumino/datagrid";
-import { TextRenderer } from "@lumino/datagrid";
 
 import { ArrowModel } from "./model";
-
-export class TextRenderConfig {
-  /**
-   * default text color
-   */
-  textColor: string = "";
-  /**
-   * background color for a search match
-   */
-  matchBackgroundColor: string = "";
-  /**
-   * background color for the current search match.
-   */
-  currentMatchBackgroundColor: string = "";
-  /**
-   * horizontalAlignment of the text
-   */
-  horizontalAlignment: DataGridModule.TextRenderer.HorizontalAlignment | undefined;
-}
 
 export namespace ArrowGridViewer {
   export interface IOptions {
@@ -158,14 +138,7 @@ export interface ITextRenderConfig {
    * default text color
    */
   textColor: string;
-  /**
-   * background color for a search match
-   */
-  matchBackgroundColor: string;
-  /**
-   * background color for the current search match.
-   */
-  currentMatchBackgroundColor: string;
+
   /**
    * horizontalAlignment of the text
    */

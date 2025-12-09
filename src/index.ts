@@ -1,5 +1,5 @@
 import { ILayoutRestorer } from "@jupyterlab/application";
-import { WidgetTracker, IThemeManager } from "@jupyterlab/apputils";
+import { IThemeManager, WidgetTracker } from "@jupyterlab/apputils";
 import { IDefaultDrive } from "@jupyterlab/services";
 import { ITranslator } from "@jupyterlab/translation";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
@@ -212,7 +212,6 @@ function activateArrowGrid(
     await widget.content.ready;
     widget.content.style = style;
     widget.content.rendererConfig = rendererConfig;
-
     updateThemes();
 
     console.log("JupyterLab extension arbalister is activated!");
@@ -270,8 +269,6 @@ namespace Private {
    */
   export const LIGHT_TEXT_CONFIG: ITextRenderConfig = {
     textColor: "#111111",
-    matchBackgroundColor: "#FFFFE0",
-    currentMatchBackgroundColor: "#FFFF00",
     horizontalAlignment: "left",
   };
 
@@ -280,8 +277,6 @@ namespace Private {
    */
   export const DARK_TEXT_CONFIG: ITextRenderConfig = {
     textColor: "#F5F5F5",
-    matchBackgroundColor: "#838423",
-    currentMatchBackgroundColor: "#A3807A",
     horizontalAlignment: "left",
   };
 }
