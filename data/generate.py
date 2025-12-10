@@ -1,14 +1,29 @@
 import argparse
 import pathlib
+import random
 
 import faker
 import pyarrow as pa
 
 import arbalister.arrow as aa
 
+MAX_FAKER_ROWS = 100_000
+
+
+def widen(field: pa.Field) -> pa.Field:
+    """Adapt Arrow schema for large files."""
+    return pa.field(field.name, pa.large_string()) if pa.types.is_string(field.type) else field
+
 
 def generate_table(num_rows: int) -> pa.Table:
     """Generate a table with fake data."""
+    if num_rows > MAX_FAKER_ROWS:
+        table = generate_table(MAX_FAKER_ROWS)
+        widened = table.cast(pa.schema([widen(f) for f in table.schema]))
+        n_repeat = num_rows // MAX_FAKER_ROWS
+        large_table = pa.concat_tables([widened] * n_repeat, promote_options="default")
+        return large_table.slice(0, num_rows)
+
     gen = faker.Faker()
     data = {
         "name": [gen.name() for _ in range(num_rows)],
@@ -56,6 +71,14 @@ def configure_argparse() -> argparse.ArgumentParser:
     return parser
 
 
+def shuffle_table(table: pa.Table, seed: int | None = None) -> pa.Table:
+    """Shuffle the rows and columns of a table."""
+    rnd = random.Random(seed)
+    row_indices = pa.array(rnd.sample(range(table.num_rows), table.num_rows), type=pa.int64())
+    col_order = rnd.sample(table.column_names, len(table.column_names))
+    return table.select(col_order).take(row_indices)
+
+
 def save_table(table: pa.Table, path: pathlib.Path, file_type: aa.FileFormat) -> None:
     """Save a table to file with the given file type."""
     path.parent.mkdir(exist_ok=True, parents=True)
@@ -75,11 +98,11 @@ def main() -> None:
             ft = next((t for t in aa.FileFormat if t.name.lower() == args.output_type), None)
             if ft is None:
                 ft = aa.FileFormat.from_filename(args.output_file)
-            save_table(table, args.output_file, ft)
+            save_table(shuffle_table(table), args.output_file, ft)
         case "batch":
             for p in args.output_file:
                 ft = aa.FileFormat.from_filename(p)
-                save_table(table, p, ft)
+                save_table(shuffle_table(table), p, ft)
 
 
 if __name__ == "__main__":
