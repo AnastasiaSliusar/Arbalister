@@ -10,11 +10,8 @@ import type { DataGrid } from "@lumino/datagrid";
 
 import { ArrowGridViewerFactory } from "./widget";
 import type { ArrowGridViewer, ITextRenderConfig } from "./widget";
+import { arrowIPC, avroIcon, orcIcon, parquetIcon } from "./labicons";
 
-import {parquetIcon} from "./lab_icons/parquet";
-import {avroIcon} from "./lab_icons/avro";
-import {orcIcon} from "./lab_icons/orc";
-import {arrowIPC} from "./lab_icons/arrowipc";
 
 export namespace NoOpContentProvider {
   export interface IOptions {
