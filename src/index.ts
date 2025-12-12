@@ -172,10 +172,10 @@ function activateArrowGrid(
 const currentTheme = themeManager?.theme;
 const isLight = themeManager?.isLight(currentTheme as string) ?? true;
   const csv_ft = ensureCsvFileType(app.docRegistry);
-  const prq_ft = addParquetFileType(app.docRegistry, { icon: getIcon('parquet', isLight) }, );
-  const avo_ft = addAvroFileType(app.docRegistry, { icon: getIcon('avro', isLight) });
-  const ipc_ft = addIpcFileType(app.docRegistry, { icon: getIcon('arrowipc', isLight) });
-  const orc_ft = addOrcFileType(app.docRegistry, { icon: getIcon('orc', isLight) });
+  let prq_ft = addParquetFileType(app.docRegistry, { icon: getIcon('parquet', isLight) }, );
+  let avo_ft = addAvroFileType(app.docRegistry, { icon: getIcon('avro', isLight) });
+  let ipc_ft = addIpcFileType(app.docRegistry, { icon: getIcon('arrowipc', isLight) });
+  let orc_ft = addOrcFileType(app.docRegistry, { icon: getIcon('orc', isLight) });
 
   const factory = new ArrowGridViewerFactory({
     name: factory_arrow,
@@ -234,6 +234,12 @@ const isLight = themeManager?.isLight(currentTheme as string) ?? true;
       widget.content.style = style;
       widget.content.rendererConfig = rendererConfig;
     });
+
+     prq_ft = addParquetFileType(app.docRegistry, { icon: getIcon('parquet', isLight) }, );
+ avo_ft = addAvroFileType(app.docRegistry, { icon: getIcon('avro', isLight) });
+  ipc_ft = addIpcFileType(app.docRegistry, { icon: getIcon('arrowipc', isLight) });
+  orc_ft = addOrcFileType(app.docRegistry, { icon: getIcon('orc', isLight) });
+
   };
   if (themeManager) {
     themeManager.themeChanged.connect((_, args) => {
