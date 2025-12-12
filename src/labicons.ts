@@ -2,7 +2,7 @@ import { LabIcon } from "@jupyterlab/ui-components";
 import arrowIPCSvg from "../style/icons/arrow.svg";
 import avroSvg from "../style/icons/avro.svg";
 import orcSvg from "../style/icons/orc.svg";
-import parquetSvg from "../style/icons/parquet_origin.svg";
+import parquetSvg from "../style/icons/parquet.svg";
 
 export const arrowIPC = new LabIcon({
   name: "arbalister:arrowipc",
