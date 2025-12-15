@@ -107,10 +107,8 @@ function activateArrowGrid(
   let isLight = true;
   if (themeManager && themeManager.isLight) {
     isLight = currentTheme ? themeManager?.isLight(currentTheme as string) : true;
-  } else {
-    isLight = false;
   }
-
+  
   const csv_ft = ensureCsvFileType(app.docRegistry);
   let prq_ft = addParquetFileType(app.docRegistry, { icon: getParquetIcon(isLight) });
   let avo_ft = addAvroFileType(app.docRegistry, { icon: getAvroIcon(isLight) });
@@ -173,7 +171,6 @@ function activateArrowGrid(
       widget.content.style = style;
       widget.content.rendererConfig = rendererConfig;
     });
-
     prq_ft = addParquetFileType(app.docRegistry, { icon: getParquetIcon(isLightNew) });
     avo_ft = addAvroFileType(app.docRegistry, { icon: getAvroIcon(isLightNew) });
     ipc_ft = addIpcFileType(app.docRegistry, { icon: getArrowIPCIcon(isLightNew) });

@@ -15,28 +15,16 @@ export const getLabIcon = (labIconName: string, iconSvg: string) => {
   });
 };
 
-const PARQUET_ICON = getLabIcon("parquet", parquetSvgLight);
-const PARQUET_DARK_ICON = getLabIcon("parquet-dark", parquetSvgDark);
-
-const ARROW_IPC_ICON = getLabIcon("arrowipc", arrowIPCSvg);
-const ARROW_IPC_DARK_ICON = getLabIcon("arrowipc-dark", arrowIPCDarkSvg);
-
-const ORC_ICON = getLabIcon("orc", orcLightSvg);
-const ORC_DARK_ICON = getLabIcon("orc-dark", orcDarkSvg);
-
-const AVRO_ICON = getLabIcon("avro", avroSvg);
-const AVRO_DARK_ICON = getLabIcon("avro-dark", avroSvg);
-
 export const getParquetIcon = (isLight: boolean) => {
-  return isLight ? PARQUET_ICON : PARQUET_DARK_ICON;
+  return  getLabIcon("parquet", isLight? parquetSvgLight: parquetSvgDark);
 };
 
 export const getArrowIPCIcon = (isLight: boolean) => {
-  return isLight ? ARROW_IPC_ICON : ARROW_IPC_DARK_ICON;
+   return  getLabIcon("arrowipc", isLight? arrowIPCSvg: arrowIPCDarkSvg);
 };
 export const getORCIcon = (isLight: boolean) => {
-  return isLight ? ORC_ICON : ORC_DARK_ICON;
+   return  getLabIcon("orc", isLight? orcLightSvg: orcDarkSvg);
 };
 export const getAvroIcon = (isLight: boolean) => {
-  return isLight ? AVRO_ICON : AVRO_DARK_ICON;
+   return  getLabIcon("avro", isLight? avroSvg: avroSvg);
 };
