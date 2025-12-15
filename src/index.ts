@@ -105,7 +105,7 @@ function activateArrowGrid(
 
   const currentTheme = themeManager?.theme;
   let isLight = true;
-  if (themeManager && themeManager.isLight) {
+  if (themeManager?.isLight) {
     isLight = currentTheme ? themeManager?.isLight(currentTheme as string) : true;
   }
 
