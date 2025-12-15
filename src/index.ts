@@ -8,10 +8,10 @@ import type * as services from "@jupyterlab/services";
 import type { Contents } from "@jupyterlab/services";
 import type { DataGrid } from "@lumino/datagrid";
 
+import { addAvroFileType, addIpcFileType, addOrcFileType, addParquetFileType } from "./filetypes";
 import { getArrowIPCIcon, getAvroIcon, getORCIcon, getParquetIcon } from "./labicons";
 import { ArrowGridViewerFactory } from "./widget";
 import type { ArrowGridViewer, ITextRenderConfig } from "./widget";
-import { addAvroFileType, addIpcFileType, addOrcFileType, addParquetFileType } from "./filetypes";
 
 export namespace NoOpContentProvider {
   export interface IOptions {
