@@ -15,21 +15,31 @@ export const getLabIcon = (labIconName: string, iconSvg: string) => {
   });
 };
 
-export const getIcon = (iconName: string, isLight: boolean) => {
-  let icon: LabIcon | undefined;
-  switch (iconName) {
-    case "parquet":
-      icon = getLabIcon(iconName, isLight ? parquetSvgLight : parquetSvgDark);
-      break;
-    case "arrowipc":
-      icon = getLabIcon(iconName, isLight ? arrowIPCSvg : arrowIPCDarkSvg);
-      break;
-    case "orc":
-      icon = getLabIcon(iconName, isLight ? orcLightSvg : orcDarkSvg);
-      break;
-    case "avro":
-      icon = getLabIcon(iconName, isLight ? avroSvg : avroSvg);
-      break;
-  }
-  return icon;
+const PARQUET_ICON = getLabIcon("parquet", parquetSvgLight);
+const PARQUET_DARK_ICON = getLabIcon("parquet-dark", parquetSvgDark);
+
+const ARROW_IPC_ICON = getLabIcon("arrowipc", arrowIPCSvg);
+const ARROW_IPC_DARK_ICON = getLabIcon("arrowipc-dark", arrowIPCDarkSvg);
+
+const ORC_ICON = getLabIcon("orc", orcLightSvg);
+const ORC_DARK_ICON = getLabIcon("orc-dark", orcDarkSvg);
+
+const AVRO_ICON = getLabIcon("avro", avroSvg);
+const AVRO_DARK_ICON = getLabIcon("avro-dark", avroSvg);
+
+export const getParquetIcon = (isLight: boolean) => {
+  console.log("???");
+  const check = isLight ? PARQUET_ICON : PARQUET_DARK_ICON;
+  console.log("check", check);
+  return check;
+};
+
+export const getArrowIPCIcon = (isLight: boolean) => {
+  return isLight ? ARROW_IPC_ICON : ARROW_IPC_DARK_ICON;
+};
+export const getORCIcon = (isLight: boolean) => {
+  return isLight ? ORC_ICON : ORC_DARK_ICON;
+};
+export const getAvroIcon = (isLight: boolean) => {
+  return isLight ? AVRO_ICON : AVRO_DARK_ICON;
 };
