@@ -108,7 +108,7 @@ function activateArrowGrid(
   if (themeManager && themeManager.isLight) {
     isLight = currentTheme ? themeManager?.isLight(currentTheme as string) : true;
   }
-  
+
   const csv_ft = ensureCsvFileType(app.docRegistry);
   let prq_ft = addParquetFileType(app.docRegistry, { icon: getParquetIcon(isLight) });
   let avo_ft = addAvroFileType(app.docRegistry, { icon: getAvroIcon(isLight) });

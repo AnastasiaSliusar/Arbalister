@@ -23,13 +23,13 @@ export function addParquetFileType(
 ): DocumentRegistry.IFileType {
   const name = "apache-parquet";
   docRegistry.addFileType({
-        ...options,
+    ...options,
     name,
     displayName: "Parquet",
     mimeTypes: ["application/vnd.apache.parquet"],
     extensions: [".parquet"],
     contentType: "file",
-    fileFormat: "base64"
+    fileFormat: "base64",
   });
   return docRegistry.getFileType(name)!;
 }
@@ -40,14 +40,13 @@ export function addIpcFileType(
 ): DocumentRegistry.IFileType {
   const name = "apache-arrow-ipc";
   docRegistry.addFileType({
-        ...options,
+    ...options,
     name,
     displayName: "Arrow IPC",
     mimeTypes: ["application/vnd.apache.arrow.file"],
     extensions: [".ipc", ".feather", ".arrow"],
     contentType: "file",
-    fileFormat: "base64"
-
+    fileFormat: "base64",
   });
   return docRegistry.getFileType(name)!;
 }
@@ -64,8 +63,7 @@ export function addOrcFileType(
     mimeTypes: ["application/octet-stream"],
     extensions: [".orc"],
     contentType: "file",
-    fileFormat: "base64"
-    
+    fileFormat: "base64",
   });
   return docRegistry.getFileType(name)!;
 }

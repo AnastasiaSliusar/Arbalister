@@ -16,15 +16,15 @@ export const getLabIcon = (labIconName: string, iconSvg: string) => {
 };
 
 export const getParquetIcon = (isLight: boolean) => {
-  return  getLabIcon("parquet", isLight? parquetSvgLight: parquetSvgDark);
+  return getLabIcon("parquet", isLight ? parquetSvgLight : parquetSvgDark);
 };
 
 export const getArrowIPCIcon = (isLight: boolean) => {
-   return  getLabIcon("arrowipc", isLight? arrowIPCSvg: arrowIPCDarkSvg);
+  return getLabIcon("arrowipc", isLight ? arrowIPCSvg : arrowIPCDarkSvg);
 };
 export const getORCIcon = (isLight: boolean) => {
-   return  getLabIcon("orc", isLight? orcLightSvg: orcDarkSvg);
+  return getLabIcon("orc", isLight ? orcLightSvg : orcDarkSvg);
 };
 export const getAvroIcon = (isLight: boolean) => {
-   return  getLabIcon("avro", isLight? avroSvg: avroSvg);
+  return getLabIcon("avro", isLight ? avroSvg : avroSvg);
 };
