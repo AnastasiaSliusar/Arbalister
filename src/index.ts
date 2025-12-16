@@ -1,5 +1,5 @@
 import { ILayoutRestorer } from "@jupyterlab/application";
-import { IThemeManager, WidgetTracker } from "@jupyterlab/apputils";
+import { IThemeManager, showErrorMessage, WidgetTracker } from "@jupyterlab/apputils";
 import { IDefaultDrive } from "@jupyterlab/services";
 import { ITranslator } from "@jupyterlab/translation";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
@@ -8,7 +8,6 @@ import type * as services from "@jupyterlab/services";
 import type { Contents } from "@jupyterlab/services";
 import type { DataGrid } from "@lumino/datagrid";
 
-import { handleError } from "./errors";
 import { addAvroFileType, addIpcFileType, addOrcFileType, addParquetFileType } from "./filetypes";
 import { getArrowIPCIcon, getAvroIcon, getORCIcon, getParquetIcon } from "./labicons";
 import { ArrowGridViewerFactory } from "./widget";
@@ -161,7 +160,7 @@ function activateArrowGrid(
       updateThemes();
       console.log("JupyterLab extension arbalister is activated!");
     } catch (error) {
-      await handleError(error, "ArrowGridViewer widget initialization failed");
+      await showErrorMessage("ArrowGridViewer widget initialization failed", error as Error);
     }
   });
 
@@ -186,7 +185,7 @@ function activateArrowGrid(
         const newTheme = args.newValue;
         updateThemes(newTheme);
       } catch (error) {
-        void handleError(error, "Failed to the viewer according to updated theme");
+        void showErrorMessage("Failed to the viewer according to updated theme", error as Error);
       }
     });
   }

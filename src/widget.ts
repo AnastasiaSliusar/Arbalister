@@ -1,3 +1,4 @@
+import { showErrorMessage } from "@jupyterlab/apputils";
 import { ABCWidgetFactory, DocumentWidget } from "@jupyterlab/docregistry";
 import { PromiseDelegate } from "@lumino/coreutils";
 import { BasicKeyHandler, BasicMouseHandler, DataGrid, TextRenderer } from "@lumino/datagrid";
@@ -5,7 +6,6 @@ import { Panel } from "@lumino/widgets";
 import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as DataGridModule from "@lumino/datagrid";
 
-import { handleError } from "./errors";
 import { ArrowModel } from "./model";
 
 export namespace ArrowGridViewer {
@@ -73,7 +73,7 @@ export class ArrowGridViewer extends Panel {
       await this._updateGrid();
       this._revealed.resolve(undefined);
     } catch (error) {
-      await handleError(error, "Failed to initialized ArrowGridViewer");
+      await showErrorMessage("Failed to initialized ArrowGridViewer", error as Error);
     }
   }
 

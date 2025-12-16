@@ -3,7 +3,6 @@ import { DataModel } from "@lumino/datagrid";
 import type * as Arrow from "apache-arrow";
 
 import { PairMap } from "./collection";
-import { handleError } from "./errors";
 import { fetchStats, fetchTable } from "./requests";
 
 export namespace ArrowModel {
@@ -28,20 +27,16 @@ export class ArrowModel extends DataModel {
   }
 
   protected async initialize(): Promise<void> {
-    try {
-      const [schema, stats, chunk00] = await Promise.all([
-        this.fetchSchema(),
-        fetchStats({ path: this._path }),
-        this.fetchChunk([0, 0]),
-      ]);
+    const [schema, stats, chunk00] = await Promise.all([
+      this.fetchSchema(),
+      fetchStats({ path: this._path }),
+      this.fetchChunk([0, 0]),
+    ]);
 
-      this._schema = schema;
-      this._chunks.set([0, 0], chunk00);
-      this._numCols = stats.num_cols;
-      this._numRows = stats.num_rows;
-    } catch (error) {
-      await handleError(error, "Initial data could not be loaded");
-    }
+    this._schema = schema;
+    this._chunks.set([0, 0], chunk00);
+    this._numCols = stats.num_cols;
+    this._numRows = stats.num_rows;
   }
 
   get ready(): Promise<void> {
@@ -109,15 +104,10 @@ export class ArrowModel extends DataModel {
 
     // Fetch data, however we cannot await it due to the interface required by the DataGrid.
     // Instead, we fire the request, and notify of change upon completion.
-    const promise = this.fetchChunk(chunk_idx)
-      .then((table) => {
-        this._chunks.set(chunk_idx, table);
-        this.emitChangedChunk(chunk_idx);
-      })
-      .catch((error) => {
-        this._chunks.delete(chunk_idx);
-        void handleError(error, "Chunk load failed");
-      });
+    const promise = this.fetchChunk(chunk_idx).then((table) => {
+      this._chunks.set(chunk_idx, table);
+      this.emitChangedChunk(chunk_idx);
+    });
     this._chunks.set(chunk_idx, promise);
 
     return this._loadingRepr;
@@ -151,14 +141,9 @@ export class ArrowModel extends DataModel {
       return;
     }
 
-    const promise = this.fetchChunk(chunk_idx)
-      .then((table) => {
-        this._chunks.set(chunk_idx, table);
-      })
-      .catch((error) => {
-        this._chunks.delete(chunk_idx);
-        void handleError(error, "Prefetch failed");
-      });
+    const promise = this.fetchChunk(chunk_idx).then((table) => {
+      this._chunks.set(chunk_idx, table);
+    });
     this._chunks.set(chunk_idx, promise);
   }
 
