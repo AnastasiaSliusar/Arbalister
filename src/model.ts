@@ -3,8 +3,8 @@ import { DataModel } from "@lumino/datagrid";
 import type * as Arrow from "apache-arrow";
 
 import { PairMap } from "./collection";
-import { fetchStats, fetchTable } from "./requests";
 import { handleError } from "./errors";
+import { fetchStats, fetchTable } from "./requests";
 
 export namespace ArrowModel {
   export interface IOptions {
@@ -116,7 +116,7 @@ export class ArrowModel extends DataModel {
       })
       .catch((error) => {
         this._chunks.delete(chunk_idx);
-        void handleError(error, "Chunck load failed");
+        void handleError(error, "Chunk load failed");
       });
     this._chunks.set(chunk_idx, promise);
 

@@ -5,8 +5,8 @@ import { Panel } from "@lumino/widgets";
 import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as DataGridModule from "@lumino/datagrid";
 
-import { ArrowModel } from "./model";
 import { handleError } from "./errors";
+import { ArrowModel } from "./model";
 
 export namespace ArrowGridViewer {
   export interface IOptions {
