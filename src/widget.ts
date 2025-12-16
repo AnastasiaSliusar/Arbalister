@@ -73,7 +73,6 @@ export class ArrowGridViewer extends Panel {
     try {
       await this._updateGrid();
       this._revealed.resolve(undefined);
-      throw new Error("test");
     } catch (error) {
       const trans = Dialog.translator.load("jupyterlab");
       const buttons = [
