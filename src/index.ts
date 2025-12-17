@@ -1,5 +1,5 @@
 import { ILayoutRestorer } from "@jupyterlab/application";
-import { IThemeManager, WidgetTracker } from "@jupyterlab/apputils";
+import { IThemeManager, showErrorMessage, WidgetTracker } from "@jupyterlab/apputils";
 import { IDefaultDrive } from "@jupyterlab/services";
 import { ITranslator } from "@jupyterlab/translation";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
@@ -154,24 +154,30 @@ function activateArrowGrid(
   app.docRegistry.addWidgetFactory(factory);
 
   factory.widgetCreated.connect(async (_sender, widget) => {
-    // Track the widget.
-    void tracker.add(widget);
-    // Notify the widget tracker if restore data needs to update.
-    widget.context.pathChanged.connect(() => {
-      void tracker.save(widget);
-    });
+    try {
+      // Track the widget.
+      void tracker.add(widget);
+      // Notify the widget tracker if restore data needs to update.
+      widget.context.pathChanged.connect(() => {
+        void tracker.save(widget);
+      });
 
-    if (csv_ft) {
-      widget.title.icon = csv_ft.icon;
-      widget.title.iconClass = csv_ft.iconClass!;
-      widget.title.iconLabel = csv_ft.iconLabel!;
+      if (csv_ft) {
+        widget.title.icon = csv_ft.icon;
+        widget.title.iconClass = csv_ft.iconClass!;
+        widget.title.iconLabel = csv_ft.iconLabel!;
+      }
+      await widget.content.ready;
+      widget.content.style = style;
+      widget.content.rendererConfig = rendererConfig;
+      updateThemes();
+      console.log("JupyterLab extension arbalister is activated!");
+    } catch (error) {
+      await showErrorMessage(
+        trans.__("ArrowGridViewer widget initialization failed"),
+        error as Error,
+      );
     }
-    await widget.content.ready;
-    widget.content.style = style;
-    widget.content.rendererConfig = rendererConfig;
-    updateThemes();
-
-    console.log("JupyterLab extension arbalister is activated!");
   });
 
   const updateThemes = (newTheme?: string | null) => {
@@ -192,8 +198,15 @@ function activateArrowGrid(
   };
   if (themeManager) {
     themeManager.themeChanged.connect((_, args) => {
-      const newTheme = args.newValue;
-      updateThemes(newTheme);
+      try {
+        const newTheme = args.newValue;
+        updateThemes(newTheme);
+      } catch (error) {
+        void showErrorMessage(
+          trans.__("Failed to the viewer according to updated theme"),
+          error as Error,
+        );
+      }
     });
   }
 }
