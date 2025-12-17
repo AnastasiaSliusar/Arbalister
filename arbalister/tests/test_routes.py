@@ -160,7 +160,7 @@ async def test_ipc_route_limit(
     table_file: pathlib.Path,
     ipc_params: arb.routes.IpcParams,
     file_params: arb.routes.SqliteReadParams,
-    file_format: ff.FileFormat
+    file_format: ff.FileFormat,
 ) -> None:
     """Test fetching a file returns the limited rows and columns in IPC."""
     response = await jp_fetch(
@@ -177,8 +177,12 @@ async def test_ipc_route_limit(
     assert response.headers["Content-Type"] == "application/vnd.apache.arrow.stream"
     payload = pa.ipc.open_stream(response.body).read_all()
 
-    if (file_format is ff.FileFormat.Csv and isinstance(file_params, arb.routes.CSVReadParams) and file_params.delimiter != ","):
-        if (len(payload.schema) > 0):
+    if (
+        file_format is ff.FileFormat.Csv
+        and isinstance(file_params, arb.routes.CSVReadParams)
+        and file_params.delimiter != ","
+    ):
+        if len(payload.schema) > 0:
             assert len(payload.schema) == 1
         return
     expected = full_table
@@ -206,7 +210,7 @@ async def test_stats_route(
     full_table: pa.Table,
     table_file: pathlib.Path,
     file_params: arb.routes.SqliteReadParams,
-    file_format: ff.FileFormat
+    file_format: ff.FileFormat,
 ) -> None:
     """Test fetching a file returns the correct metadata in Json."""
     response = await jp_fetch(
@@ -219,9 +223,13 @@ async def test_stats_route(
     assert response.headers["Content-Type"] == "application/json; charset=UTF-8"
 
     payload = json.loads(response.body)
-    if (file_format is ff.FileFormat.Csv and isinstance(file_params, arb.routes.CSVReadParams) and file_params.delimiter != ","):
+    if (
+        file_format is ff.FileFormat.Csv
+        and isinstance(file_params, arb.routes.CSVReadParams)
+        and file_params.delimiter != ","
+    ):
         assert payload["num_cols"] == 1
         return
-    
+
     assert payload["num_cols"] == len(full_table.schema)
     assert payload["num_rows"] == full_table.num_rows

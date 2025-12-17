@@ -21,11 +21,12 @@ class SqliteReadParams:
 
     table_name: str | None = None
 
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class CSVReadParams:
     """Query parameter for the CSV reader."""
 
-    delimiter: str | None = ','
+    delimiter: str | None = ","
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -33,7 +34,7 @@ class NoReadParams:
     """Query parameter for readers with no parameters."""
 
 
-FileReadParams = SqliteReadParams | CSVReadParams | NoReadParams 
+FileReadParams = SqliteReadParams | CSVReadParams | NoReadParams
 
 
 class BaseRouteHandler(jupyter_server.base.handlers.APIHandler):
