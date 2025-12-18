@@ -17,6 +17,7 @@ import arbalister.file_format as ff
     params=[
         (ff.FileFormat.Avro, arb.routes.NoReadParams()),
         (ff.FileFormat.Csv, arb.routes.NoReadParams()),
+        (ff.FileFormat.Csv, arb.routes.CSVReadParams(delimiter=";")),
         (ff.FileFormat.Ipc, arb.routes.NoReadParams()),
         (ff.FileFormat.Orc, arb.routes.NoReadParams()),
         (ff.FileFormat.Parquet, arb.routes.NoReadParams()),
@@ -101,6 +102,8 @@ def table_file(
     table_path = jp_root_dir / f"test.{str(file_format).lower()}"
 
     match file_format:
+        case ff.FileFormat.Csv:
+            write_table(dummy_table_1, table_path, delimiter=getattr(file_params, "delimiter", ","))
         case ff.FileFormat.Sqlite:
             write_table(dummy_table_1, table_path, table_name="dummy_table_1", mode="create_append")
             write_table(dummy_table_2, table_path, table_name="dummy_table_2", mode="create_append")
@@ -159,6 +162,7 @@ async def test_ipc_route_limit(
     table_file: pathlib.Path,
     ipc_params: arb.routes.IpcParams,
     file_params: arb.routes.SqliteReadParams,
+    file_format: ff.FileFormat,
 ) -> None:
     """Test fetching a file returns the limited rows and columns in IPC."""
     response = await jp_fetch(
@@ -200,6 +204,7 @@ async def test_stats_route(
     full_table: pa.Table,
     table_file: pathlib.Path,
     file_params: arb.routes.SqliteReadParams,
+    file_format: ff.FileFormat,
 ) -> None:
     """Test fetching a file returns the correct metadata in Json."""
     response = await jp_fetch(
@@ -212,5 +217,6 @@ async def test_stats_route(
     assert response.headers["Content-Type"] == "application/json; charset=UTF-8"
 
     payload = json.loads(response.body)
+
     assert payload["num_cols"] == len(full_table.schema)
     assert payload["num_rows"] == full_table.num_rows
