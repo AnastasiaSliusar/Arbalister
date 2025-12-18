@@ -1,44 +1,71 @@
 import { tableFromIPC } from "apache-arrow";
 import type * as Arrow from "apache-arrow";
 
-export interface StatsParams {
-  readonly path: string;
+import type { FileOptions } from "./file_options";
+
+export interface StatsOptions {
+  path: string;
 }
 
 export interface StatsResponse {
-  readonly num_rows: number;
-  readonly num_cols: number;
+  num_rows: number;
+  num_cols: number;
 }
 
-export async function fetchStats(params: StatsParams): Promise<StatsResponse> {
-  const response = await fetch(`/arrow/stats/${params.path}`);
+/**
+ * Transform a union into a union where every member is optionally present.
+ */
+type OptionalizeUnion<T> = {
+  [K in T extends unknown ? keyof T : never]?: T extends Record<K, infer V> ? V : never;
+};
+
+export async function fetchStats(
+  params: Readonly<StatsOptions & FileOptions>,
+): Promise<StatsResponse> {
+  const queryKeys = ["path", "delimiter"] as const;
+
+  const query = new URLSearchParams();
+
+  for (const key of queryKeys) {
+    const value = (params as Readonly<TableOptions> & OptionalizeUnion<FileOptions>)[key];
+    if (value !== undefined && value != null) {
+      query.set(key, value.toString());
+    }
+  }
+
+  const response = await fetch(`/arrow/stats/${params.path}?${query.toString()}`);
   const data = await response.json();
   return data;
 }
 
-export interface TableParams {
-  readonly path: string;
-  readonly row_chunk_size?: number;
-  readonly row_chunk?: number;
-  readonly col_chunk_size?: number;
-  readonly col_chunk?: number;
+export interface TableOptions {
+  path: string;
+  row_chunk_size?: number;
+  row_chunk?: number;
+  col_chunk_size?: number;
+  col_chunk?: number;
 }
 
-export async function fetchTable(params: TableParams): Promise<Arrow.Table> {
-  const query: string[] = [];
-  if (params.row_chunk_size !== undefined) {
-    query.push(`row_chunk_size=${encodeURIComponent(params.row_chunk_size)}`);
+export async function fetchTable(
+  params: Readonly<TableOptions & FileOptions>,
+): Promise<Arrow.Table> {
+  const queryKeys = [
+    "row_chunk_size",
+    "row_chunk",
+    "col_chunk_size",
+    "col_chunk",
+    "delimiter",
+  ] as const;
+
+  const query = new URLSearchParams();
+
+  for (const key of queryKeys) {
+    const value = (params as Readonly<TableOptions> & OptionalizeUnion<FileOptions>)[key];
+    if (value !== undefined && value != null) {
+      query.set(key, value.toString());
+    }
   }
-  if (params.row_chunk !== undefined) {
-    query.push(`row_chunk=${encodeURIComponent(params.row_chunk)}`);
-  }
-  if (params.col_chunk_size !== undefined) {
-    query.push(`col_chunk_size=${encodeURIComponent(params.col_chunk_size)}`);
-  }
-  if (params.col_chunk !== undefined) {
-    query.push(`col_chunk=${encodeURIComponent(params.col_chunk)}`);
-  }
-  const queryString = query.length ? `?${query.join("&")}` : "";
-  const url = `/arrow/stream/${params.path}${queryString}`;
+
+  const url = `/arrow/stream/${params.path}?${query.toString()}`;
   return await tableFromIPC(fetch(url));
 }

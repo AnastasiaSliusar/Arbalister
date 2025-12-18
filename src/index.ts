@@ -3,7 +3,7 @@ import { IThemeManager, showErrorMessage, WidgetTracker } from "@jupyterlab/appu
 import { IDefaultDrive } from "@jupyterlab/services";
 import { ITranslator } from "@jupyterlab/translation";
 import type { JupyterFrontEnd, JupyterFrontEndPlugin } from "@jupyterlab/application";
-import type { DocumentRegistry, IDocumentWidget } from "@jupyterlab/docregistry";
+import type { IDocumentWidget } from "@jupyterlab/docregistry";
 import type * as services from "@jupyterlab/services";
 import type { Contents } from "@jupyterlab/services";
 import type { DataGrid } from "@lumino/datagrid";
@@ -14,6 +14,7 @@ import {
   addOrcFileType,
   addParquetFileType,
   addSqliteFileType,
+  ensureCsvFileType,
 } from "./filetypes";
 import {
   getArrowIPCIcon,
@@ -77,22 +78,6 @@ const arrowGrid: JupyterFrontEndPlugin<void> = {
   autoStart: true,
 };
 
-function ensureCsvFileType(docRegistry: DocumentRegistry): DocumentRegistry.IFileType {
-  const name = "csv";
-  const ft = docRegistry.getFileType(name)!;
-  if (ft) {
-    return ft;
-  }
-  docRegistry.addFileType({
-    name,
-    displayName: "CSV",
-    mimeTypes: ["text/csv"],
-    extensions: [".csv"],
-    contentType: "file",
-  });
-  return docRegistry.getFileType(name)!;
-}
-
 function activateArrowGrid(
   app: JupyterFrontEnd,
   translator: ITranslator,
@@ -128,15 +113,18 @@ function activateArrowGrid(
   let orc_ft = addOrcFileType(app.docRegistry, { icon: getORCIcon(isLight) });
   let sqlite_ft = addSqliteFileType(app.docRegistry, { icon: getSqliteIcon(isLight) });
 
-  const factory = new ArrowGridViewerFactory({
-    name: factory_arrow,
-    label: trans.__("Arrow Dataframe Viewer"),
-    fileTypes: [csv_ft.name, avo_ft.name, prq_ft.name, ipc_ft.name, orc_ft.name, sqlite_ft.name],
-    defaultFor: [csv_ft.name, avo_ft.name, prq_ft.name, ipc_ft.name, orc_ft.name, sqlite_ft.name],
-    readOnly: true,
-    translator,
-    contentProviderId: NOOP_CONTENT_PROVIDER_ID,
-  });
+  const factory = new ArrowGridViewerFactory(
+    {
+      name: factory_arrow,
+      label: trans.__("Arrow Dataframe Viewer"),
+      fileTypes: [csv_ft.name, avo_ft.name, prq_ft.name, ipc_ft.name, orc_ft.name, sqlite_ft.name],
+      defaultFor: [csv_ft.name, avo_ft.name, prq_ft.name, ipc_ft.name, orc_ft.name, sqlite_ft.name],
+      readOnly: true,
+      translator,
+      contentProviderId: NOOP_CONTENT_PROVIDER_ID,
+    },
+    app.docRegistry,
+  );
   const tracker = new WidgetTracker<IDocumentWidget<ArrowGridViewer>>({
     namespace: "arrowviewer",
   });
@@ -162,11 +150,6 @@ function activateArrowGrid(
         void tracker.save(widget);
       });
 
-      if (csv_ft) {
-        widget.title.icon = csv_ft.icon;
-        widget.title.iconClass = csv_ft.iconClass!;
-        widget.title.iconLabel = csv_ft.iconLabel!;
-      }
       await widget.content.ready;
       widget.content.style = style;
       widget.content.rendererConfig = rendererConfig;
