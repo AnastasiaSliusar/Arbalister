@@ -17,12 +17,12 @@ import arbalister.file_format as ff
     params=[
         (ff.FileFormat.Avro, arb.routes.NoReadParams()),
         (ff.FileFormat.Csv, arb.routes.NoReadParams()),
+        (ff.FileFormat.Csv, arb.routes.CSVReadParams(delimiter=";")),
         (ff.FileFormat.Ipc, arb.routes.NoReadParams()),
         (ff.FileFormat.Orc, arb.routes.NoReadParams()),
         (ff.FileFormat.Parquet, arb.routes.NoReadParams()),
         (ff.FileFormat.Sqlite, arb.routes.NoReadParams()),
         (ff.FileFormat.Sqlite, arb.routes.SqliteReadParams(table_name="dummy_table_2")),
-        (ff.FileFormat.Csv, arb.routes.CSVReadParams(delimiter=";")),
     ],
     ids=lambda f_p: f"{f_p[0].value}-{dataclasses.asdict(f_p[1])}",
     scope="module",
@@ -102,6 +102,8 @@ def table_file(
     table_path = jp_root_dir / f"test.{str(file_format).lower()}"
 
     match file_format:
+        case ff.FileFormat.Csv:
+            write_table(dummy_table_1, table_path, delimiter=getattr(file_params, "delimiter", ","))
         case ff.FileFormat.Sqlite:
             write_table(dummy_table_1, table_path, table_name="dummy_table_1", mode="create_append")
             write_table(dummy_table_2, table_path, table_name="dummy_table_2", mode="create_append")
@@ -177,14 +179,6 @@ async def test_ipc_route_limit(
     assert response.headers["Content-Type"] == "application/vnd.apache.arrow.stream"
     payload = pa.ipc.open_stream(response.body).read_all()
 
-    if (
-        file_format is ff.FileFormat.Csv
-        and isinstance(file_params, arb.routes.CSVReadParams)
-        and file_params.delimiter != ","
-    ):
-        if len(payload.schema) > 0:
-            assert len(payload.schema) == 1
-        return
     expected = full_table
 
     # Row slicing
@@ -223,13 +217,6 @@ async def test_stats_route(
     assert response.headers["Content-Type"] == "application/json; charset=UTF-8"
 
     payload = json.loads(response.body)
-    if (
-        file_format is ff.FileFormat.Csv
-        and isinstance(file_params, arb.routes.CSVReadParams)
-        and file_params.delimiter != ","
-    ):
-        assert payload["num_cols"] == 1
-        return
 
     assert payload["num_cols"] == len(full_table.schema)
     assert payload["num_rows"] == full_table.num_rows

@@ -115,7 +115,20 @@ def get_table_writer(format: ff.FileFormat) -> WriteCallable:
         case ff.FileFormat.Csv:
             import pyarrow.csv
 
-            out = pyarrow.csv.write_csv
+            def write_csv(
+                data: pa.Table,
+                output_file: str | pathlib.Path,
+                memory_pool: pa.MemoryPool | None = None,
+                **kwargs: dict[str, Any],
+            ) -> None:
+                pyarrow.csv.write_csv(
+                    data=data,
+                    output_file=str(output_file),
+                    memory_pool=memory_pool,
+                    write_options=pyarrow.csv.WriteOptions(**kwargs),
+                )
+
+            out = write_csv
         case ff.FileFormat.Parquet:
             import pyarrow.parquet
 
