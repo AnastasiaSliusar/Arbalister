@@ -5,6 +5,7 @@ import type * as Arrow from "apache-arrow";
 
 import { ArrowModel } from "../model";
 import { fetchStats, fetchTable } from "../requests";
+import type { FileInfo, FileOptions } from "../file_options";
 import type * as Req from "../requests";
 
 const MOCK_TABLE = tableFromArrays({
@@ -52,7 +53,7 @@ describe("ArrowModel", () => {
   (fetchTable as jest.Mock).mockImplementation(fetchTableMocked);
   (fetchStats as jest.Mock).mockImplementation(fetchStatsMocked);
 
-  const model = new ArrowModel({ path: "test/path.parquet" }, {});
+  const model = new ArrowModel({ path: "test/path.parquet" }, {} as FileOptions, {} as FileInfo);
 
   it("should initialize data", async () => {
     await model.ready;
@@ -69,5 +70,19 @@ describe("ArrowModel", () => {
 
     // First chunk is initialized
     expect(model.data("body", 0, 0)).toEqual(MOCK_TABLE.getChildAt(0)?.get(0).toString());
+  });
+
+  it("should reinitialize when fileOptions is set", async () => {
+    const model2 = new ArrowModel({ path: "test/data.csv" }, {} as FileOptions, {} as FileInfo);
+    await model2.ready;
+
+    const initialStatsCallCount = (fetchStats as jest.Mock).mock.calls.length;
+    const initialTableCallCount = (fetchTable as jest.Mock).mock.calls.length;
+
+    model2.fileOptions = { delimiter: ";" } as FileOptions;
+    await model2.ready;
+
+    expect(fetchStats).toHaveBeenCalledTimes(initialStatsCallCount + 1);
+    expect(fetchTable).toHaveBeenCalledTimes(initialTableCallCount + 1);
   });
 });

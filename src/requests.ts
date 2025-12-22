@@ -1,7 +1,22 @@
 import { tableFromIPC } from "apache-arrow";
 import type * as Arrow from "apache-arrow";
 
-import type { FileOptions } from "./file_options";
+import type { FileInfo, FileOptions } from "./file_options";
+
+export interface FileInfoOptions {
+  path: string;
+}
+
+export interface FileInfoResponse {
+  info: FileInfo;
+  read_params: FileOptions;
+}
+
+export async function fetchFileInfo(params: Readonly<FileInfoOptions>): Promise<FileInfoResponse> {
+  const response = await fetch(`/file/info/${params.path}`);
+  const data: FileInfoResponse = await response.json();
+  return data;
+}
 
 export interface StatsOptions {
   path: string;
@@ -35,14 +50,18 @@ type OptionalizeUnion<T> = {
 export async function fetchStats(
   params: Readonly<StatsOptions & FileOptions>,
 ): Promise<StatsResponse> {
-  const queryKeys = ["path", "delimiter"] as const;
+  const queryKeys = ["path", "delimiter", "table_name"] as const;
+  const queryKeyMap: Record<string, string> = {
+    tableName: "table_name",
+  };
 
   const query = new URLSearchParams();
 
   for (const key of queryKeys) {
     const value = (params as Readonly<TableOptions> & OptionalizeUnion<FileOptions>)[key];
     if (value !== undefined && value != null) {
-      query.set(key, value.toString());
+      const queryKey = queryKeyMap[key] || key;
+      query.set(queryKey, value.toString());
     }
   }
 
@@ -95,6 +114,7 @@ export async function fetchTable(
     "col_chunk_size",
     "col_chunk",
     "delimiter",
+    "table_name",
   ] as const;
 
   const query = new URLSearchParams();
