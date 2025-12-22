@@ -17,25 +17,25 @@ from . import params as params
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class SqliteReadParams:
+class Empty:
+    """An empty data class."""
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class SqliteOptions:
     """Query parameter for the Sqlite reader."""
 
     table_name: str | None = None
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class CSVReadParams:
+class CsvOptions:
     """Query parameter for the CSV reader."""
 
     delimiter: str | None = ","
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class NoReadParams:
-    """Query parameter for readers with no parameters."""
-
-
-FileReadParams = SqliteReadParams | CSVReadParams | NoReadParams
+FileOptions = SqliteOptions | CsvOptions | Empty
 
 
 class BaseRouteHandler(jupyter_server.base.handlers.APIHandler):
@@ -66,14 +66,14 @@ class BaseRouteHandler(jupyter_server.base.handlers.APIHandler):
         """Extract query parameters into a dataclass type."""
         return params.build_dataclass(dataclass_type, self.get_query_argument)
 
-    def get_file_read_params(self, file_format: ff.FileFormat) -> FileReadParams:
+    def get_file_read_params(self, file_format: ff.FileFormat) -> FileOptions:
         """Read the parameters associated with the relevant file format."""
         match file_format:
             case ff.FileFormat.Sqlite:
-                return self.get_query_params_as(SqliteReadParams)
+                return self.get_query_params_as(SqliteOptions)
             case ff.FileFormat.Csv:
-                return self.get_query_params_as(CSVReadParams)
-        return NoReadParams()
+                return self.get_query_params_as(CsvOptions)
+        return Empty()
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -139,13 +139,6 @@ class StatsResponse:
     num_cols: int = 0
 
 
-@dataclasses.dataclass(frozen=True, slots=True)
-class SqliteFileInfo:
-    """File-specific information returned in the file info route."""
-
-    table_names: list[str] | None = None
-
-
 class StatsRouteHandler(BaseRouteHandler):
     """An handler to get file in IPC."""
 
@@ -187,6 +180,37 @@ class StatsRouteHandler(BaseRouteHandler):
         await self.finish(dataclasses.asdict(response))
 
 
+@dataclasses.dataclass(frozen=True, slots=True)
+class SqliteFileInfo:
+    """Sqlite specific information about a file."""
+
+    table_names: list[str]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CsvFileInfo:
+    """Csv specific information about a file."""
+
+    delimiters: list[str] = dataclasses.field(default_factory=lambda: [",", ";", "\\t", "|", "#"])
+
+
+FileInfo = SqliteFileInfo
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class FileInfoResponse[I, P]:
+    """File-specific information and defaults returned in the file info route."""
+
+    info: I
+    read_params: P
+
+
+CsvFileInfoResponse = FileInfoResponse[CsvFileInfo, CsvOptions]
+SqliteFileInfoResponse = FileInfoResponse[SqliteFileInfo, SqliteOptions]
+
+NoFileInfoResponse = FileInfoResponse[Empty, Empty]
+
+
 class FileInfoRouteHandler(BaseRouteHandler):
     """A handler to get file-specific information."""
 
@@ -196,17 +220,27 @@ class FileInfoRouteHandler(BaseRouteHandler):
         file = self.data_file(path)
         file_format = ff.FileFormat.from_filename(file)
 
-        table_names: list[str] | None = None
+        match file_format:
+            case ff.FileFormat.Csv:
+                info = CsvFileInfo()
+                csv_response = CsvFileInfoResponse(
+                    info=info,
+                    read_params=CsvOptions(delimiter=info.delimiters[0]),
+                )
+                await self.finish(dataclasses.asdict(csv_response))
+            case ff.FileFormat.Sqlite:
+                from . import adbc
 
-        if file_format == ff.FileFormat.Sqlite:
-            from . import adbc
+                table_names = adbc.SqliteDataFrame.get_table_names(file)
 
-            table_names = adbc.SqliteDataFrame.get_table_names(file)
-
-            response = SqliteFileInfo(table_names=table_names)
-            await self.finish(dataclasses.asdict(response))
-
-        await self.finish({})
+                sqlite_response = SqliteFileInfoResponse(
+                    info=SqliteFileInfo(table_names=table_names),
+                    read_params=SqliteOptions(table_name=table_names[0]),
+                )
+                await self.finish(dataclasses.asdict(sqlite_response))
+            case _:
+                no_response = NoFileInfoResponse(info=Empty(), read_params=Empty())
+                await self.finish(dataclasses.asdict(no_response))
 
 
 def make_datafusion_config() -> dn.SessionConfig:
