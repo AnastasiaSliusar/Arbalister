@@ -1,6 +1,6 @@
 {
     "name": "arbalister",
-    "version": "0.2.0-dev0",
+    "version": "0.2.0-dev1",
     "description": "Arrow viewer for Jupyter",
     "keywords": [
         "jupyter",
