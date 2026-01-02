@@ -153,3 +153,32 @@ def get_table_writer(format: ff.FileFormat) -> WriteCallable:
 
             out = adbc.write_sqlite
     return out
+
+def get_parquet_column_stats(path:str):
+    import pyarrow.parquet as pq
+    file = pq.ParquetFile(path)
+    metadata = file.metadata
+    schema = file.schema
+    columns_stats = []
+    for i, field in enumerate(schema):
+        min_val = None
+        max_val = None
+        null_count = 0
+
+        for row_group_index in range(metadata.num_row_groups):
+            row = metadata.row_group(row_group_index)
+            col_chunk = row.column(i)
+            stats = col_chunk.statistics
+            if stats:
+                if min_val is None or stats.min < min_val:
+                    min_val = stats.min
+                if max_val is None or stats.max < max_val:
+                    max_val = stats.max 
+                null_count +=stats.null_count if stats.null_count is not None else 0
+            columns_stats.append({
+                "name":field.name,
+                "min":min_val,
+                "max": max_val,
+                "null_count": null_count
+            })
+    return columns_stats

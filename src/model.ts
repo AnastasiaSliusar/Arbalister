@@ -118,7 +118,9 @@ export class ArrowModel extends DataModel {
         // This is to showcase that we can put additional information in the column header but it
         // does not look good. HuggingFace dataset has some good inspiration.
         const field = this.schema.fields[column];
-        return `${field.name} (${field.type}${field.nullable ? " | null" : ""})`;
+        return `${field.name} 
+        (${field.type}${field.nullable ? " | null" : ""})
+        Rows: ${this._numRows}`;
       }
       case "row-header":
         return row.toString();
