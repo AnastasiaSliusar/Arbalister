@@ -142,7 +142,7 @@ class StatsResponse:
     schema: SchemaInfo
     num_rows: int = 0
     num_cols: int = 0
-    columns: list[ColumnInfo]
+    columns: list[ColumnInfo] = dataclasses.field(default_factory=list)
 
 
 class StatsRouteHandler(BaseRouteHandler):
@@ -228,10 +228,7 @@ class FileInfoRouteHandler(BaseRouteHandler):
         file = self.data_file(path)
         file_format = ff.FileFormat.from_filename(file)
         
-         df = self.dataframe(path)
-
-        # FIXME this is not optimal for ORC/CSV where we can read_metadata, but it is not read
-        # via DataFusion.
+        df = self.dataframe(path)
         schema = df.schema()
         columns = [
             ColumnInfo(name=field.name, dtype=str(field.type), nullable=field.nullable)
