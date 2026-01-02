@@ -24,11 +24,15 @@ export namespace ArrowModel {
 
 export class ArrowModel extends DataModel {
   static async fromRemoteFileInfo(loadingOptions: ArrowModel.LoadingOptions) {
-    const { info: fileInfo, default_options: fileOptions } = await fetchFileInfo({
+    const {
+      info: fileInfo,
+      default_options: fileOptions,
+      size_bytes,
+    } = await fetchFileInfo({
       path: loadingOptions.path,
     });
 
-    console.log("fileInfo", fileInfo);
+    console.log("size_bytes", size_bytes);
     return new ArrowModel(loadingOptions, fileOptions, fileInfo);
   }
 

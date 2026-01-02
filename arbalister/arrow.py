@@ -1,5 +1,6 @@
 import codecs
 import pathlib
+from pathlib import Path
 from typing import Any, Callable
 
 import datafusion as dn
@@ -154,8 +155,13 @@ def get_table_writer(format: ff.FileFormat) -> WriteCallable:
             out = adbc.write_sqlite
     return out
 
-def get_parquet_column_stats(path:str):
+def get_parquet_column_stats(path:str | Path)->list[dict[str, Any]]:
+    """Get parquet column stats."""
     import pyarrow.parquet as pq
+
+    if isinstance(path, Path):
+        path = str(path)
+
     file = pq.ParquetFile(path)
     metadata = file.metadata
     schema = file.schema
@@ -173,7 +179,7 @@ def get_parquet_column_stats(path:str):
                 if min_val is None or stats.min < min_val:
                     min_val = stats.min
                 if max_val is None or stats.max < max_val:
-                    max_val = stats.max 
+                    max_val = stats.max
                 null_count +=stats.null_count if stats.null_count is not None else 0
             columns_stats.append({
                 "name":field.name,

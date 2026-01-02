@@ -22,6 +22,7 @@ export interface FileInfoResponseFor<T extends FileType> {
 export interface FileInfoResponse {
   info: FileInfo;
   default_options: FileReadOptions;
+  size_bytes?: number | null;
 }
 
 export async function fetchFileInfo(params: Readonly<FileInfoOptions>): Promise<FileInfoResponse> {
@@ -90,7 +91,6 @@ export async function fetchStats(
     throw new Error(`Error communicating with the Arbalister server: ${response.status}`);
   }
   const data: StatsResponseRaw = await response.json();
-console.log('data', data);
   // Validate encoding and content type
   if (data.schema.encoding !== "base64") {
     throw new Error(`Unexpected schema encoding: ${data.schema.encoding}, expected "base64"`);

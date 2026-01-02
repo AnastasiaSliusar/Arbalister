@@ -128,14 +128,16 @@ class SchemaInfo:
     mimetype: str = "application/vnd.apache.arrow.stream"
     encoding: str = "base64"
 
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class ColumnStats:
-    """Column stats for a parquet file"""
+    """Column stats for a parquet file."""
 
     name: str
     min: object | None = None
     max: object | None = None
     null_count: int | None = None
+
 
 @dataclasses.dataclass(frozen=True, slots=True)
 class StatsResponse:
@@ -153,17 +155,13 @@ class StatsRouteHandler(BaseRouteHandler):
     @tornado.web.authenticated
     async def get(self, path: str) -> None:
         """HTTP GET return statistics."""
-
         file = self.data_file(path)
         file_format = ff.FileFormat.from_filename(file)
 
         columns_stats = None
         if file_format == ff.FileFormat.Parquet:
             parquet_columns_stats = abw.get_parquet_column_stats(file)
-            columns_stats = [
-                ColumnStats(**stats)
-                for stats in parquet_columns_stats
-                ]
+            columns_stats = [ColumnStats(**stats) for stats in parquet_columns_stats]
         df = self.dataframe(path)
 
         # FIXME this is not optimal for ORC/CSV where we can read_metadata, but it is not read
@@ -225,12 +223,13 @@ class FileInfoResponse[I, P]:
 
     info: I
     default_options: P
+    size_bytes: int | None = None
 
 
 CsvFileInfoResponse = FileInfoResponse[CsvFileInfo, CsvReadOptions]
 SqliteFileInfoResponse = FileInfoResponse[SqliteFileInfo, SqliteReadOptions]
 
-NoFileInfoResponse = FileInfoResponse[Empty, Empty, ]
+NoFileInfoResponse = FileInfoResponse[Empty, Empty]
 
 
 class FileInfoRouteHandler(BaseRouteHandler):
@@ -243,14 +242,12 @@ class FileInfoRouteHandler(BaseRouteHandler):
         file_format = ff.FileFormat.from_filename(file)
 
         df = self.dataframe(path)
-        schema = df.schema()
+        df.schema()
 
         try:
             size_bytes = os.path.getsize(file)
         except Exception:
             size_bytes = None
-    
-
 
         match file_format:
             case ff.FileFormat.Csv:
@@ -273,7 +270,7 @@ class FileInfoRouteHandler(BaseRouteHandler):
                 )
                 await self.finish(dataclasses.asdict(sqlite_response))
             case _:
-                no_response = NoFileInfoResponse(info=Empty(), default_options=Empty())
+                no_response = NoFileInfoResponse(info=Empty(), default_options=Empty(), size_bytes=size_bytes)
                 await self.finish(dataclasses.asdict(no_response))
 
 
