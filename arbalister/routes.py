@@ -130,6 +130,7 @@ class SchemaInfo:
 
 @dataclasses.dataclass(frozen=True, slots=True)
 class ColumnInfo:
+    """Column information with data types."""
 
     name: str
     dtype: str
@@ -227,14 +228,14 @@ class FileInfoRouteHandler(BaseRouteHandler):
         """HTTP GET return file-specific information."""
         file = self.data_file(path)
         file_format = ff.FileFormat.from_filename(file)
-        
+
         df = self.dataframe(path)
         schema = df.schema()
         columns = [
             ColumnInfo(name=field.name, dtype=str(field.type), nullable=field.nullable)
             for field in schema
         ]
-        
+
 
         match file_format:
             case ff.FileFormat.Csv:

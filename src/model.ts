@@ -28,7 +28,7 @@ export class ArrowModel extends DataModel {
       path: loadingOptions.path,
     });
 
-    console.log('fileInfo',fileInfo);
+    console.log("fileInfo", fileInfo);
     return new ArrowModel(loadingOptions, fileOptions, fileInfo);
   }
 
