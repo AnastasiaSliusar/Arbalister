@@ -128,6 +128,12 @@ class SchemaInfo:
     mimetype: str = "application/vnd.apache.arrow.stream"
     encoding: str = "base64"
 
+@dataclasses.dataclass(frozen=True, slots=True)
+class ColumnInfo:
+
+    name: str
+    dtype: str
+    nullable: bool
 
 @dataclasses.dataclass(frozen=True, slots=True)
 class StatsResponse:
@@ -136,6 +142,7 @@ class StatsResponse:
     schema: SchemaInfo
     num_rows: int = 0
     num_cols: int = 0
+    columns: list[ColumnInfo]
 
 
 class StatsRouteHandler(BaseRouteHandler):
@@ -184,6 +191,7 @@ class SqliteFileInfo:
     """Sqlite specific information about a file."""
 
     table_names: list[str]
+    columns: list[ColumnInfo] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -191,6 +199,7 @@ class CsvFileInfo:
     """Csv specific information about a file."""
 
     delimiters: list[str] = dataclasses.field(default_factory=lambda: [",", ";", "\\t", "|", "#"])
+    columns: list[ColumnInfo] = dataclasses.field(default_factory=list)
 
 
 FileInfo = SqliteFileInfo | CsvFileInfo
@@ -218,10 +227,21 @@ class FileInfoRouteHandler(BaseRouteHandler):
         """HTTP GET return file-specific information."""
         file = self.data_file(path)
         file_format = ff.FileFormat.from_filename(file)
+        
+         df = self.dataframe(path)
+
+        # FIXME this is not optimal for ORC/CSV where we can read_metadata, but it is not read
+        # via DataFusion.
+        schema = df.schema()
+        columns = [
+            ColumnInfo(name=field.name, dtype=str(field.type), nullable=field.nullable)
+            for field in schema
+        ]
+        
 
         match file_format:
             case ff.FileFormat.Csv:
-                info = CsvFileInfo()
+                info = CsvFileInfo(columns=columns)
                 csv_response = CsvFileInfoResponse(
                     info=info,
                     default_options=CsvReadOptions(delimiter=info.delimiters[0]),
@@ -233,7 +253,7 @@ class FileInfoRouteHandler(BaseRouteHandler):
                 table_names = adbc.SqliteDataFrame.get_table_names(file)
 
                 sqlite_response = SqliteFileInfoResponse(
-                    info=SqliteFileInfo(table_names=table_names),
+                    info=SqliteFileInfo(table_names=table_names, columns=columns),
                     default_options=SqliteReadOptions(table_name=table_names[0]),
                 )
                 await self.finish(dataclasses.asdict(sqlite_response))

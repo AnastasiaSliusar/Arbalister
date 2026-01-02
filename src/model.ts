@@ -27,6 +27,8 @@ export class ArrowModel extends DataModel {
     const { info: fileInfo, default_options: fileOptions } = await fetchFileInfo({
       path: loadingOptions.path,
     });
+
+    console.log('fileInfo',fileInfo);
     return new ArrowModel(loadingOptions, fileOptions, fileInfo);
   }
 
