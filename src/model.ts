@@ -127,6 +127,13 @@ export class ArrowModel extends DataModel {
     }
   }
 
+  getColsAndRows(): {cols: number, rows:number} {
+    return {
+      cols: this._numCols,
+      rows:this._numRows
+    }
+  }
+
   private dataBody(row: number, col: number): string {
     const chunkIdx = this._chunks.getChunkIdx({ rowIdx: row, colIdx: col });
 

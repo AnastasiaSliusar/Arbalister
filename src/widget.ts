@@ -89,6 +89,14 @@ export class ArrowGridViewer extends Panel {
     };
   }
 
+  getNumColsAndRows() {
+    const data = this.dataModel.getColsAndRows();
+    return {
+      cols:data.cols,
+      rows: data.rows
+    };
+  }
+
   /**
    * The style used by the data grid.
    */

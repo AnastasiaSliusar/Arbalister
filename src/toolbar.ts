@@ -21,11 +21,14 @@ import type { ArrowGridViewer } from "./widget";
  * Maintain a value synchronized with the UI and falls back to the previous value on error.
  */
 abstract class DropdownToolbar extends Widget {
-  constructor(labelName: string, options: Array<[string, string]>, selected: string) {
+  constructor(labelName: string, options: Array<[string, string]>, selected: string, cols: number, rows: number ) {
     const node = DropdownToolbar.createDropdownNode(labelName, options, selected);
     super({ node });
     this._currentValue = selected;
     this._labelName = labelName;
+
+    let metadataContent = DropdownToolbar.addColsRows(cols,rows);
+    this.node.appendChild(metadataContent);
     this.addClass("arrow-viewer-toolbar");
   }
 
@@ -56,6 +59,20 @@ abstract class DropdownToolbar extends Widget {
     node.classList.add("toolbar-dropdown");
     div.appendChild(node);
     return div;
+  }
+
+  protected static addColsRows(cols: number, rows: number) {
+    const span = document.createElement("span");
+    const labelCols = document.createElement("span");
+    const labelRows = document.createElement("span");
+   
+    labelCols.textContent = ` Column numbers: ${cols};`;
+    labelRows.textContent = ` Row numbers: ${rows}`;
+    labelCols.className = "toolbar-label-cols";
+    labelRows.className = "toolbar-label-rows";
+    span.appendChild(labelCols);
+    span.appendChild(labelRows);
+    return span;
   }
 
   /**
@@ -144,8 +161,9 @@ export class CsvToolbar extends DropdownToolbar {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
     const delimiterOptions: [string, string][] = fileInfo.delimiters.map((delim) => [delim, delim]);
-    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter);
-    this._gridViewer = options.gridViewer;
+    const colsRows = options.gridViewer.getNumColsAndRows();    
+    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter, colsRows.cols, colsRows.rows);
+   this._gridViewer = options.gridViewer;
   }
 
   get fileOptions(): CsvReadOptions {
@@ -178,7 +196,8 @@ export class SqliteToolbar extends DropdownToolbar {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
     const tableOptions: [string, string][] = fileInfo.table_names.map((name) => [name, name]);
-    super(trans.__("Table"), tableOptions, fileOptions.table_name);
+     const colsRows = options.gridViewer.getNumColsAndRows();
+    super(trans.__("Table"), tableOptions, fileOptions.table_name,  colsRows.cols, colsRows.rows);
     this._gridViewer = options.gridViewer;
   }
 
@@ -214,6 +233,8 @@ export function createToolbar<T extends FileType>(
   fileOptions: FileReadOptionsFor<T>,
   fileInfo: FileInfoFor<T>,
 ): Widget | null {
+  console.log('ToolbarOptions', options);
+  console.log('fileOptions', fileOptions);
   switch (fileType) {
     case FileType.Csv:
       return new CsvToolbar(options, fileOptions as CsvReadOptions, fileInfo as CsvFileInfo);
