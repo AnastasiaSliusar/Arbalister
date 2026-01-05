@@ -21,14 +21,11 @@ import type { ArrowGridViewer } from "./widget";
  * Maintain a value synchronized with the UI and falls back to the previous value on error.
  */
 abstract class DropdownToolbar extends Widget {
-  constructor(labelName: string, options: Array<[string, string]>, selected: string, cols: number, rows: number ) {
+  constructor(labelName: string, options: Array<[string, string]>, selected: string) {
     const node = DropdownToolbar.createDropdownNode(labelName, options, selected);
     super({ node });
     this._currentValue = selected;
     this._labelName = labelName;
-
-    let metadataContent = DropdownToolbar.addColsRows(cols,rows);
-    this.node.appendChild(metadataContent);
     this.addClass("arrow-viewer-toolbar");
   }
 
@@ -59,20 +56,6 @@ abstract class DropdownToolbar extends Widget {
     node.classList.add("toolbar-dropdown");
     div.appendChild(node);
     return div;
-  }
-
-  protected static addColsRows(cols: number, rows: number) {
-    const span = document.createElement("span");
-    const labelCols = document.createElement("span");
-    const labelRows = document.createElement("span");
-   
-    labelCols.textContent = ` Column numbers: ${cols};`;
-    labelRows.textContent = ` Row numbers: ${rows}`;
-    labelCols.className = "toolbar-label-cols";
-    labelRows.className = "toolbar-label-rows";
-    span.appendChild(labelCols);
-    span.appendChild(labelRows);
-    return span;
   }
 
   /**
@@ -149,6 +132,7 @@ abstract class DropdownToolbar extends Widget {
   private _labelName: string;
 }
 
+
 export namespace CsvToolbar {
   export interface Options {
     gridViewer: ArrowGridViewer;
@@ -160,10 +144,9 @@ export class CsvToolbar extends DropdownToolbar {
   constructor(options: CsvToolbar.Options, fileOptions: CsvReadOptions, fileInfo: CsvFileInfo) {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
-    const delimiterOptions: [string, string][] = fileInfo.delimiters.map((delim) => [delim, delim]);
-    const colsRows = options.gridViewer.getNumColsAndRows();    
-    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter, colsRows.cols, colsRows.rows);
-   this._gridViewer = options.gridViewer;
+    const delimiterOptions: [string, string][] = fileInfo.delimiters.map((delim) => [delim, delim]);  
+    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter);
+    this._gridViewer = options.gridViewer;
   }
 
   get fileOptions(): CsvReadOptions {
@@ -196,9 +179,10 @@ export class SqliteToolbar extends DropdownToolbar {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
     const tableOptions: [string, string][] = fileInfo.table_names.map((name) => [name, name]);
-     const colsRows = options.gridViewer.getNumColsAndRows();
-    super(trans.__("Table"), tableOptions, fileOptions.table_name,  colsRows.cols, colsRows.rows);
+    super(trans.__("Table"), tableOptions, fileOptions.table_name);
     this._gridViewer = options.gridViewer;
+    
+    
   }
 
   get fileOptions(): SqliteReadOptions {
@@ -235,16 +219,44 @@ export function createToolbar<T extends FileType>(
 ): Widget | null {
   console.log('ToolbarOptions', options);
   console.log('fileOptions', fileOptions);
+  const colsRows = options.gridViewer.getNumColsAndRows();
+  let widget = null;
   switch (fileType) {
     case FileType.Csv:
-      return new CsvToolbar(options, fileOptions as CsvReadOptions, fileInfo as CsvFileInfo);
+      widget =  new CsvToolbar(options, fileOptions as CsvReadOptions, fileInfo as CsvFileInfo);
+      break;
     case FileType.Sqlite:
-      return new SqliteToolbar(
+      widget = new SqliteToolbar(
         options,
         fileOptions as SqliteReadOptions,
         fileInfo as SqliteFileInfo,
       );
+      break;
     default:
-      return null;
-  }
+      widget = new Widget();
+      widget.addClass("arrow-viewer-toolbar");
+      break;
+    }
+    widget.node.appendChild(addColsRows(colsRows.cols, colsRows.rows, options.translator));
+
+  return widget;
 }
+
+ function addColsRows(cols: number, rows: number, translator?: ITranslator) {
+    translator = translator || nullTranslator;
+    const trans = translator.load("jupyterlab");
+
+    const div = document.createElement("div");
+    const labelCols = document.createElement("span");
+    const labelRows = document.createElement("span");
+   
+    labelCols.textContent =  trans.__(`Number Columns: ${cols}`);
+    labelRows.textContent =  trans.__(`Number Rows: ${rows}`);
+    labelCols.classList.add('jp-toolbal-number-label');
+    labelRows.classList.add('jp-toolbal-number-label');
+    labelCols.classList.add('toolbar-label');
+    labelRows.classList.add('toolbar-label');
+    div.appendChild(labelCols);
+    div.appendChild(labelRows);
+    return div;
+  }
