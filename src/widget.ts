@@ -89,11 +89,12 @@ export class ArrowGridViewer extends Panel {
     };
   }
 
-  getNumColsAndRows() {
-    const data = this.dataModel.getColsAndRows();
+  get numColsAndRows() {
+    const data = this.dataModel.numColsAndRows;
+    console.log('data', data);
     return {
-      cols:data.cols,
-      rows: data.rows
+      cols: data.cols,
+      rows: data.rows,
     };
   }
 

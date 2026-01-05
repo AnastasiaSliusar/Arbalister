@@ -127,11 +127,11 @@ export class ArrowModel extends DataModel {
     }
   }
 
-  getColsAndRows(): {cols: number, rows:number} {
+  get numColsAndRows(): { cols: number; rows: number } {
     return {
       cols: this._numCols,
-      rows:this._numRows
-    }
+      rows: this._numRows,
+    };
   }
 
   private dataBody(row: number, col: number): string {
