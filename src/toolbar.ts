@@ -39,7 +39,7 @@ abstract class DropdownToolbar extends Widget {
   ): HTMLElement {
     const div = document.createElement("div");
     const selectDiv = document.createElement("div");
-    selectDiv.className = 'toolbar-select';
+    selectDiv.className = "toolbar-select";
     const label = document.createElement("span");
     const select = document.createElement("select");
     label.textContent = `${labelName}: `;
@@ -54,7 +54,7 @@ abstract class DropdownToolbar extends Widget {
       select.appendChild(option);
     }
     selectDiv.appendChild(label);
-   
+
     const node = Styling.wrapSelect(select);
     node.classList.add("toolbar-dropdown");
     selectDiv.appendChild(node);
@@ -274,8 +274,8 @@ function addColsRows(cols: number, rows: number, translator?: ITranslator) {
   const labelCols = document.createElement("span");
   const labelRows = document.createElement("span");
 
-  labelCols.textContent = trans.__(`${cols} column${cols >1 ? 's':''}`);
-  labelRows.textContent = trans.__(`${rows} row${rows > 1 ? 's': ''};`);
+  labelCols.textContent = trans.__(`${cols} column${cols > 1 ? "s" : ""}`);
+  labelRows.textContent = trans.__(`${rows} row${rows > 1 ? "s" : ""};`);
 
   labelCols.classList.add("toolbar-label", "cols");
   labelRows.className = "toolbar-label";
