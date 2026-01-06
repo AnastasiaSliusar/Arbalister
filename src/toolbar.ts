@@ -163,10 +163,10 @@ export class CsvToolbar extends DropdownToolbar {
     this._gridViewer.updateFileReadOptions({ delimiter: newValue });
     await this._gridViewer.ready;
 
-    const cols = this._gridViewer.cols;
-    const rows = this._gridViewer.rows;
+    const numCols = this._gridViewer.numCols;
+    const numRows = this._gridViewer.numRows;
 
-    this.updateToolbar(cols, rows, this._translator);
+    this.updateToolbar(numCols, numRows, this._translator);
   }
   protected updateToolbar(cols: number, rows: number, translator?: ITranslator) {
     const colsAndRows = this.node.getElementsByClassName("toolbar-group-cols-rows")[0];
@@ -208,9 +208,9 @@ export class SqliteToolbar extends DropdownToolbar {
   protected async onChange(newValue: string): Promise<void> {
     this._gridViewer.updateFileReadOptions({ table_name: newValue });
     await this._gridViewer.ready;
-    const cols = this._gridViewer.cols;
-    const rows = this._gridViewer.rows;
-    this.updateToolbar(cols, rows, this._translator);
+    const numCols = this._gridViewer.numCols;
+    const numRows = this._gridViewer.numRows;
+    this.updateToolbar(numCols, numRows, this._translator);
   }
 
   protected updateToolbar(cols: number, rows: number, translator?: ITranslator) {
@@ -241,8 +241,8 @@ export function createToolbar<T extends FileType>(
   fileOptions: FileReadOptionsFor<T>,
   fileInfo: FileInfoFor<T>,
 ): Widget | null {
-  const cols = options.gridViewer.cols;
-  const rows = options.gridViewer.rows;
+  const numCols = options.gridViewer.numCols;
+  const numRows = options.gridViewer.numRows;
   let widget = null;
   switch (fileType) {
     case FileType.Csv:
@@ -260,7 +260,7 @@ export function createToolbar<T extends FileType>(
       widget.addClass("arrow-viewer-toolbar");
       break;
   }
-  widget.node.appendChild(addColsRows(cols, rows, options.translator));
+  widget.node.appendChild(addColsRows(numCols, numRows, options.translator));
 
   return widget;
 }

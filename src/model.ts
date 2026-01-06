@@ -135,14 +135,6 @@ export class ArrowModel extends DataModel {
     }
   }
 
-  get cols() {
-    return this._numCols;
-  }
-
-  get rows() {
-    return this._numRows;
-  }
-
   private dataBody(row: number, col: number): string {
     const chunkIdx = this._chunks.getChunkIdx({ rowIdx: row, colIdx: col });
 

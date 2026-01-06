@@ -163,12 +163,12 @@ export class ArrowGridViewer extends Panel {
     };
   }
 
-  get cols() {
-    return this.dataModel.cols;
+  get numCols() {
+    return this.dataModel.numCols;
   }
 
-  get rows() {
-    return this.dataModel.rows;
+  get numRows() {
+    return this.dataModel.numRows;
   }
 
   /**
