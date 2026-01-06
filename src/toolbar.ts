@@ -38,6 +38,8 @@ abstract class DropdownToolbar extends Widget {
     selected: string,
   ): HTMLElement {
     const div = document.createElement("div");
+    const selectDiv = document.createElement("div");
+    selectDiv.className = 'toolbar-select';
     const label = document.createElement("span");
     const select = document.createElement("select");
     label.textContent = `${labelName}: `;
@@ -51,10 +53,12 @@ abstract class DropdownToolbar extends Widget {
       }
       select.appendChild(option);
     }
-    div.appendChild(label);
+    selectDiv.appendChild(label);
+   
     const node = Styling.wrapSelect(select);
     node.classList.add("toolbar-dropdown");
-    div.appendChild(node);
+    selectDiv.appendChild(node);
+    div.appendChild(selectDiv);
     return div;
   }
 
@@ -239,8 +243,6 @@ export function createToolbar<T extends FileType>(
 ): Widget | null {
   const cols = options.gridViewer.cols;
   const rows = options.gridViewer.rows;
-  console.log("cols", cols);
-  console.log("rows", rows);
   let widget = null;
   switch (fileType) {
     case FileType.Csv:
@@ -272,12 +274,12 @@ function addColsRows(cols: number, rows: number, translator?: ITranslator) {
   const labelCols = document.createElement("span");
   const labelRows = document.createElement("span");
 
-  labelCols.textContent = trans.__(`Number Columns: ${cols}`);
-  labelRows.textContent = trans.__(`Number Rows: ${rows}`);
+  labelCols.textContent = trans.__(`${cols} column${cols >1 ? 's':''}`);
+  labelRows.textContent = trans.__(`${rows} row${rows > 1 ? 's': ''};`);
 
-  labelCols.className = "toolbar-label";
+  labelCols.classList.add("toolbar-label", "cols");
   labelRows.className = "toolbar-label";
-  div.appendChild(labelCols);
   div.appendChild(labelRows);
+  div.appendChild(labelCols);
   return div;
 }

@@ -83,8 +83,6 @@ export class ArrowGridViewer extends Panel {
   }
 
   updateFileReadOptions(fileOptionsUpdate: Partial<FileReadOptions>) {
-    console.log("fileReadOptions", this.fileReadOptions);
-    console.log("fileOptionsUpdate", fileOptionsUpdate);
     this.fileReadOptions = {
       ...this.fileReadOptions,
       ...fileOptionsUpdate,
