@@ -146,6 +146,7 @@ export class CsvToolbar extends DropdownToolbar {
     const delimiterOptions: [string, string][] = fileInfo.delimiters.map((delim) => [delim, delim]);
     super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter);
     this._gridViewer = options.gridViewer;
+    this._translator = options.translator;
   }
 
   get fileOptions(): CsvReadOptions {
@@ -157,9 +158,20 @@ export class CsvToolbar extends DropdownToolbar {
   protected async onChange(newValue: string): Promise<void> {
     this._gridViewer.updateFileReadOptions({ delimiter: newValue });
     await this._gridViewer.ready;
+
+    const cols = this._gridViewer.cols;
+    const rows = this._gridViewer.rows;
+
+    this.updateToolbar(cols, rows, this._translator);
+  }
+  protected updateToolbar(cols: number, rows: number, translator?: ITranslator) {
+    const colsAndRows = this.node.getElementsByClassName("toolbar-group-cols-rows")[0];
+    this.node.removeChild(colsAndRows);
+    this.node.appendChild(addColsRows(cols, rows, translator));
   }
 
   private _gridViewer: ArrowGridViewer;
+  private _translator?: ITranslator;
 }
 
 export namespace SqliteToolbar {
@@ -180,6 +192,7 @@ export class SqliteToolbar extends DropdownToolbar {
     const tableOptions: [string, string][] = fileInfo.table_names.map((name) => [name, name]);
     super(trans.__("Table"), tableOptions, fileOptions.table_name);
     this._gridViewer = options.gridViewer;
+    this._translator = options.translator;
   }
 
   get fileOptions(): SqliteReadOptions {
@@ -191,9 +204,19 @@ export class SqliteToolbar extends DropdownToolbar {
   protected async onChange(newValue: string): Promise<void> {
     this._gridViewer.updateFileReadOptions({ table_name: newValue });
     await this._gridViewer.ready;
+    const cols = this._gridViewer.cols;
+    const rows = this._gridViewer.rows;
+    this.updateToolbar(cols, rows, this._translator);
+  }
+
+  protected updateToolbar(cols: number, rows: number, translator?: ITranslator) {
+    const colsAndRows = this.node.getElementsByClassName("toolbar-group-cols-rows")[0];
+    this.node.removeChild(colsAndRows);
+    this.node.appendChild(addColsRows(cols, rows, translator));
   }
 
   private _gridViewer: ArrowGridViewer;
+  private _translator?: ITranslator;
 }
 
 /**
@@ -214,8 +237,10 @@ export function createToolbar<T extends FileType>(
   fileOptions: FileReadOptionsFor<T>,
   fileInfo: FileInfoFor<T>,
 ): Widget | null {
-  const colsRows = options.gridViewer.numColsAndRows;
-  console.log("colsRows", colsRows);
+  const cols = options.gridViewer.cols;
+  const rows = options.gridViewer.rows;
+  console.log("cols", cols);
+  console.log("rows", rows);
   let widget = null;
   switch (fileType) {
     case FileType.Csv:
@@ -233,7 +258,7 @@ export function createToolbar<T extends FileType>(
       widget.addClass("arrow-viewer-toolbar");
       break;
   }
-  widget.node.appendChild(addColsRows(colsRows.cols, colsRows.rows, options.translator));
+  widget.node.appendChild(addColsRows(cols, rows, options.translator));
 
   return widget;
 }
@@ -243,15 +268,15 @@ function addColsRows(cols: number, rows: number, translator?: ITranslator) {
   const trans = translator.load("jupyterlab");
 
   const div = document.createElement("div");
+  div.className = "toolbar-group-cols-rows";
   const labelCols = document.createElement("span");
   const labelRows = document.createElement("span");
 
   labelCols.textContent = trans.__(`Number Columns: ${cols}`);
   labelRows.textContent = trans.__(`Number Rows: ${rows}`);
-  labelCols.classList.add("jp-toolbal-number-label");
-  labelRows.classList.add("jp-toolbal-number-label");
-  labelCols.classList.add("toolbar-label");
-  labelRows.classList.add("toolbar-label");
+
+  labelCols.className = "toolbar-label";
+  labelRows.className = "toolbar-label";
   div.appendChild(labelCols);
   div.appendChild(labelRows);
   return div;

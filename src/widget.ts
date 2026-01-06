@@ -83,19 +83,20 @@ export class ArrowGridViewer extends Panel {
   }
 
   updateFileReadOptions(fileOptionsUpdate: Partial<FileReadOptions>) {
+    console.log("fileReadOptions", this.fileReadOptions);
+    console.log("fileOptionsUpdate", fileOptionsUpdate);
     this.fileReadOptions = {
       ...this.fileReadOptions,
       ...fileOptionsUpdate,
     };
   }
 
-  get numColsAndRows() {
-    const data = this.dataModel.numColsAndRows;
-    console.log('data', data);
-    return {
-      cols: data.cols,
-      rows: data.rows,
-    };
+  get cols() {
+    return this.dataModel.cols;
+  }
+
+  get rows() {
+    return this.dataModel.rows;
   }
 
   /**
