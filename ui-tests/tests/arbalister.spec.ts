@@ -1,11 +1,11 @@
-import { expect, test } from "@jupyterlab/galata";
-import { getColsRows, uploadFile, waitForGrid } from "../utils";
+import { expect, galata, test } from "@jupyterlab/galata";
+import path from "path";
 
 /**
  * Don't load JupyterLab webpage before running the tests.
  * This is required to ensure we capture all log messages.
  */
-test.use({ autoGoto: false });
+test.use({ autoGoto: false, tmpPath: 'arbalister-viewer-tests' });
 
 test("should emit an activation console message", async ({ page }) => {
   const logs: string[] = [];
@@ -19,33 +19,49 @@ test("should emit an activation console message", async ({ page }) => {
   expect(logs.filter((s) => s === "Launching JupyterLab extension arbalister")).toHaveLength(1);
 });
 
-test.describe("Viewers", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto();
+test.describe.serial("Arbalister Viewer", ()=>{
+  test.beforeAll(async ({ request, tmpPath }) => {
+    const contents = galata.newContentsHelper(request);
+    await contents.uploadFile(
+      path.resolve(__dirname, `./test-files/test.csv`),
+      `${tmpPath}/test.csv`
+    );
+
+     await contents.uploadFile(
+      path.resolve(__dirname, `./test-files/test.parquet`),
+      `${tmpPath}/test.parquet`
+    );
   });
+
+  test.afterAll(async ({ request, tmpPath }) => {
+    const contents = galata.newContentsHelper(request);
+    await contents.deleteDirectory(tmpPath);
+  });
+
   test("open csv file and shows a delimiter", async ({ page }) => {
-    await uploadFile(page, "fake_test.csv");
-    await waitForGrid(page);
+    await page.goto();
+const tmpPath = 'arbalister-viewer-tests';
+     const target = `${tmpPath}/test.csv`;
+    await page.filebrowser.open(target);
 
-    const before = await getColsRows(page);
 
-    await page.selectOption("select", ";");
-    await page.waitForTimeout(500);
+    await page.waitForSelector('.arrow-viewer-toolbar');
 
-    const after = await getColsRows(page);
-
-    await page.selectOption("select", ";");
-    await page.waitForTimeout(500);
-
-    expect(after).not.toEqual(before);
+    const text =  page.locator(`.toolbar-group-cols-rows`).innerText;
+console.log('text csv', text);
+    expect(text).toContain("3 rows; 3 colums");
   });
 
   test("open parquet file", async ({ page }) => {
-    await uploadFile(page, "fake_test.parquet");
-    await waitForGrid(page);
-    const before = await getColsRows(page);
-    const check = "3 rows; 3 columns";
-    console.log("before", before);
-    expect(before).toEqual(check);
+    await page.goto();
+
+   const tmpPath = 'arbalister-viewer-tests';
+     const target = `${tmpPath}/test.parquet`;
+await page.filebrowser.open(target);
+    await page.waitForSelector('.arrow-viewer-toolbar');
+
+    const text =  page.locator(`.toolbar-group-cols-rows`).innerText;
+console.log('text parquet', text);
+    expect(text).toContain("3 rows; 3 colums");
   });
 });
