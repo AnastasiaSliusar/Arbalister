@@ -13,6 +13,7 @@
   }
 
   .arrow-viewer-toolbar {
+    width: 99%;
     display: flex;
     flex: 0 0 auto;
     flex-direction: row;
@@ -21,11 +22,22 @@
     background: var(--jp-toolbar-background);
     z-index: 1;
 
+    .toolbar-select {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+      align-items: center;
+    }
+
     .toolbar-label {
       color: var(--jp-ui-font-color1);
       font-size: var(--jp-ui-font-size1);
       padding-left: 8px;
       padding-right: 8px;
+
+      .cols {
+        padding-right: 0px;
+      }
     }
 
     .toolbar-dropdown {
@@ -44,6 +56,10 @@
         height: 20px;
         padding-right: 20px;
       }
+    }
+
+    .toolbar-group-cols-rows {
+      margin-left: auto;
     }
   }
 }

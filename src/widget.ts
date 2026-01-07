@@ -163,6 +163,14 @@ export class ArrowGridViewer extends Panel {
     };
   }
 
+  get numCols(): number {
+    return this.dataModel.numCols;
+  }
+
+  get numRows(): number {
+    return this.dataModel.numRows;
+  }
+
   /**
    * The style used by the data grid.
    */

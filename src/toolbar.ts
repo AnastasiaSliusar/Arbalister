@@ -16,14 +16,66 @@ import type {
 } from "./file-options";
 import type { ArrowGridViewer } from "./widget";
 
+abstract class InfoOnlyToolbar extends Widget {
+  constructor(options: ToolbarOptions) {
+    super();
+    this._gridViewer = options.gridViewer;
+    this._translator = options.translator;
+    this._colsRowsNode = this.addColsRows(
+      this._gridViewer.numCols,
+      this._gridViewer.numRows,
+      this._translator,
+    );
+    this.node.appendChild(this._colsRowsNode);
+  }
+
+  protected updateToolbar(): void {
+    const newNode = this.addColsRows(
+      this._gridViewer.numCols,
+      this._gridViewer.numRows,
+      this._translator,
+    );
+    this.node.replaceChild(newNode, this._colsRowsNode);
+    this._colsRowsNode = newNode;
+  }
+
+  protected addColsRows(cols: number, rows: number, translator?: ITranslator): HTMLDivElement {
+    translator = translator || nullTranslator;
+    const trans = translator.load("jupyterlab");
+
+    const div = document.createElement("div");
+    div.className = "toolbar-group-cols-rows";
+    const labelCols = document.createElement("span");
+    const labelRows = document.createElement("span");
+
+    labelCols.textContent = trans.__(`${cols} column${cols > 1 ? "s" : ""}`);
+    labelRows.textContent = trans.__(`${rows} row${rows > 1 ? "s" : ""};`);
+
+    labelCols.classList.add("toolbar-label", "cols");
+    labelRows.className = "toolbar-label";
+    div.appendChild(labelRows);
+    div.appendChild(labelCols);
+    return div;
+  }
+
+  protected _translator?: ITranslator | undefined;
+  protected _gridViewer: ArrowGridViewer;
+  private _colsRowsNode: HTMLDivElement;
+}
 /**
  * Base toolbar class for a dropdown selector with error recovery.
  * Maintain a value synchronized with the UI and falls back to the previous value on error.
  */
-abstract class DropdownToolbar extends Widget {
-  constructor(labelName: string, options: Array<[string, string]>, selected: string) {
+abstract class DropdownToolbar extends InfoOnlyToolbar {
+  constructor(
+    labelName: string,
+    options: Array<[string, string]>,
+    selected: string,
+    toolbarOptions: ToolbarOptions,
+  ) {
+    super(toolbarOptions);
     const node = DropdownToolbar.createDropdownNode(labelName, options, selected);
-    super({ node });
+    this.node.insertBefore(node, this.node.firstChild);
     this._currentValue = selected;
     this._labelName = labelName;
     this.addClass("arrow-viewer-toolbar");
@@ -37,7 +89,8 @@ abstract class DropdownToolbar extends Widget {
     options: Array<[string, string]>,
     selected: string,
   ): HTMLElement {
-    const div = document.createElement("div");
+    const selectDiv = document.createElement("div");
+    selectDiv.className = "toolbar-select";
     const label = document.createElement("span");
     const select = document.createElement("select");
     label.textContent = `${labelName}: `;
@@ -51,11 +104,12 @@ abstract class DropdownToolbar extends Widget {
       }
       select.appendChild(option);
     }
-    div.appendChild(label);
+    selectDiv.appendChild(label);
+
     const node = Styling.wrapSelect(select);
     node.classList.add("toolbar-dropdown");
-    div.appendChild(node);
-    return div;
+    selectDiv.appendChild(node);
+    return selectDiv;
   }
 
   /**
@@ -96,6 +150,7 @@ abstract class DropdownToolbar extends Widget {
         try {
           await this.onChange(newValue);
           this._currentValue = newValue;
+          this.updateToolbar();
         } catch (error) {
           // Reset the selector value
           this.value = previousValue;
@@ -144,7 +199,7 @@ export class CsvToolbar extends DropdownToolbar {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
     const delimiterOptions: [string, string][] = fileInfo.delimiters.map((delim) => [delim, delim]);
-    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter);
+    super(trans.__("Delimiter"), delimiterOptions, fileOptions.delimiter, options);
     this._gridViewer = options.gridViewer;
   }
 
@@ -158,8 +213,6 @@ export class CsvToolbar extends DropdownToolbar {
     this._gridViewer.updateFileReadOptions({ delimiter: newValue });
     await this._gridViewer.ready;
   }
-
-  private _gridViewer: ArrowGridViewer;
 }
 
 export namespace SqliteToolbar {
@@ -178,8 +231,7 @@ export class SqliteToolbar extends DropdownToolbar {
     const translator = options.translator || nullTranslator;
     const trans = translator.load("jupyterlab");
     const tableOptions: [string, string][] = fileInfo.table_names.map((name) => [name, name]);
-    super(trans.__("Table"), tableOptions, fileOptions.table_name);
-    this._gridViewer = options.gridViewer;
+    super(trans.__("Table"), tableOptions, fileOptions.table_name, options);
   }
 
   get fileOptions(): SqliteReadOptions {
@@ -192,8 +244,6 @@ export class SqliteToolbar extends DropdownToolbar {
     this._gridViewer.updateFileReadOptions({ table_name: newValue });
     await this._gridViewer.ready;
   }
-
-  private _gridViewer: ArrowGridViewer;
 }
 
 /**
@@ -214,16 +264,23 @@ export function createToolbar<T extends FileType>(
   fileOptions: FileReadOptionsFor<T>,
   fileInfo: FileInfoFor<T>,
 ): Widget | null {
+  let widget = null;
   switch (fileType) {
     case FileType.Csv:
-      return new CsvToolbar(options, fileOptions as CsvReadOptions, fileInfo as CsvFileInfo);
+      widget = new CsvToolbar(options, fileOptions as CsvReadOptions, fileInfo as CsvFileInfo);
+      break;
     case FileType.Sqlite:
-      return new SqliteToolbar(
+      widget = new SqliteToolbar(
         options,
         fileOptions as SqliteReadOptions,
         fileInfo as SqliteFileInfo,
       );
+      break;
     default:
-      return null;
+      widget = new (class extends InfoOnlyToolbar {})(options);
+      widget.addClass("arrow-viewer-toolbar");
+      break;
   }
+
+  return widget;
 }
