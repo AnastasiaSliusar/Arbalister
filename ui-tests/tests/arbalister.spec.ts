@@ -39,17 +39,19 @@ test.describe
       await contents.deleteDirectory(tmpPath);
     });
 
+
     test("open csv file and shows a delimiter", async ({ page }) => {
       await page.goto();
       const tmpPath = "arbalister-viewer-tests";
       const target = `${tmpPath}/test.csv`;
-      await page.filebrowser.open(target);
+      await page.notebook.openByPath(target);
+      await page.notebook.activate(target);
 
-      await page.waitForSelector(".arrow-viewer-toolbar");
-
-      const text = page.locator(`.toolbar-group-cols-rows`).innerText;
+      const text = page.getByTestId(`toolbar-group-cols-rows`).innerText;
       console.log("text csv", text);
       expect(text).toContain("3 rows; 3 colums");
+      await page.notebook.close(true);
+      
     });
 
     test("open parquet file", async ({ page }) => {
@@ -57,11 +59,13 @@ test.describe
 
       const tmpPath = "arbalister-viewer-tests";
       const target = `${tmpPath}/test.parquet`;
-      await page.filebrowser.open(target);
-      await page.waitForSelector(".arrow-viewer-toolbar");
+      await page.notebook.openByPath(target);
+      await page.notebook.activate(target);
 
       const text = page.locator(`.toolbar-group-cols-rows`).innerText;
       console.log("text parquet", text);
       expect(text).toContain("3 rows; 3 colums");
+
+      await page.notebook.close(true);
     });
   });
