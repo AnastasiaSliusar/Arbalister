@@ -1,6 +1,10 @@
 import { expect, galata, test } from "@jupyterlab/galata";
 import path from "path";
 
+export async function waitBeforeSnapshot(page: any, ms = 3000) {
+  await page.waitForTimeout(ms);
+}
+
 /**
  * Don't load JupyterLab webpage before running the tests.
  * This is required to ensure we capture all log messages.
@@ -39,19 +43,22 @@ test.describe
       await contents.deleteDirectory(tmpPath);
     });
 
-
     test("open csv file and shows a delimiter", async ({ page }) => {
       await page.goto();
       const tmpPath = "arbalister-viewer-tests";
       const target = `${tmpPath}/test.csv`;
       await page.notebook.openByPath(target);
       await page.notebook.activate(target);
+      await page.waitForTimeout(10000);
 
-      const text = page.getByTestId(`toolbar-group-cols-rows`).innerText;
+      const text = page.getByTestId(`toolbar-group-cols-rows`);
       console.log("text csv", text);
-      expect(text).toContain("3 rows; 3 colums");
+      await expect(text).toBeVisible();
+      expect(await page.screenshot()).toMatchSnapshot({
+        name: "csv_arbalister_viewer.png",
+        maxDiffPixelRatio: 0.02,
+      });
       await page.notebook.close(true);
-      
     });
 
     test("open parquet file", async ({ page }) => {
@@ -61,10 +68,14 @@ test.describe
       const target = `${tmpPath}/test.parquet`;
       await page.notebook.openByPath(target);
       await page.notebook.activate(target);
+      await page.waitForTimeout(10000);
 
-      const text = page.locator(`.toolbar-group-cols-rows`).innerText;
-      console.log("text parquet", text);
-      expect(text).toContain("3 rows; 3 colums");
+      const text = page.getByTestId(`toolbar-group-cols-rows`);
+      await expect(text).toBeVisible();
+      expect(await page.screenshot()).toMatchSnapshot({
+        name: "parquest_arbalister_viewer.png",
+        maxDiffPixelRatio: 0.02,
+      });
 
       await page.notebook.close(true);
     });

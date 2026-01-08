@@ -45,7 +45,7 @@ abstract class InfoOnlyToolbar extends Widget {
 
     const div = document.createElement("div");
     div.className = "toolbar-group-cols-rows";
-    div.setAttribute('data-testid','toolbar-group-cols-rows');
+    div.setAttribute("data-testid", "toolbar-group-cols-rows");
     const labelCols = document.createElement("span");
     const labelRows = document.createElement("span");
 
@@ -108,7 +108,7 @@ abstract class DropdownToolbar extends InfoOnlyToolbar {
     selectDiv.appendChild(label);
     const node = Styling.wrapSelect(select);
     node.classList.add("toolbar-dropdown");
-    node.setAttribute('data-testid','toolbar-dropdown');
+    node.setAttribute("data-testid", "toolbar-dropdown");
     selectDiv.appendChild(node);
     return selectDiv;
   }
