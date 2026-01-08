@@ -19,6 +19,17 @@ async function checkFile(page: IJupyterLabPageFixture, filename: string, snapsho
   });
 }
 
+async function checkToolbar(page:IJupyterLabPageFixture){
+   const text = page.getByTestId(`toolbar-group-cols-rows`);
+      await expect(text).toBeVisible();
+     
+      const rows = page.locator(".toolbar-group-cols-rows .toolbar-label:not(.cols)");
+      await expect(rows).toHaveText("3 rows;");
+
+      const cols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
+      await expect(cols).toHaveText("3 columns");
+}
+
 /**
  * Don't load JupyterLab webpage before running the tests.
  * This is required to ensure we capture all log messages.
@@ -59,18 +70,9 @@ test.describe
 
     test("open csv file and change a delimiter", async ({ page }) => {
       await checkFile(page, "test.csv", "csv_arbalister_viewer.png");
-
-      const text = page.getByTestId(`toolbar-group-cols-rows`);
-      await expect(text).toBeVisible();
-
-      const rows = page.locator(".toolbar-group-cols-rows .toolbar-label:not(.cols)");
-      await expect(rows).toHaveText("3 rows;");
-
-      const cols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
-      await expect(cols).toHaveText("3 columns");
+      checkToolbar(page);
 
       await page.locator(".toolbar-dropdown select").selectOption(";");
-
       const newCols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
       await expect(newCols).toHaveText("1 column");
 
@@ -78,10 +80,8 @@ test.describe
     });
 
     test("open parquet file", async ({ page }) => {
-      await checkFile(page, "test.parquet", "parquest_arbalister_viewer.png");
-
-      const text = page.getByTestId(`toolbar-group-cols-rows`);
-      await expect(text).toBeVisible();
+      await checkFile(page, "test.parquet", "parquet_arbalister_viewer.png");
+      checkToolbar(page);
       await page.notebook.close(true);
     });
   });
