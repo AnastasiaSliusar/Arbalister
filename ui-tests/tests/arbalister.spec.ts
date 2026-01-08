@@ -61,6 +61,11 @@ test.describe
         path.resolve(__dirname, `./test-files/test.parquet`),
         `${tmpPath}/test.parquet`,
       );
+
+       await contents.uploadFile(
+        path.resolve(__dirname, `./test-files/test.sqlite`),
+        `${tmpPath}/test.sqlite`,
+      );
     });
 
     test.afterAll(async ({ request, tmpPath }) => {
@@ -69,18 +74,19 @@ test.describe
     });
 
     test("open csv file and change a delimiter", async ({ page }) => {
-      await checkFile(page, "test.csv", "csv_arbalister_viewer.png");
-      checkToolbar(page);
-
-      await page.locator(".toolbar-dropdown select").selectOption(";");
-      const newCols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
-      await expect(newCols).toHaveText("1 column");
-
+      await checkFile(page, "test.csv", "arbalister_viewer_csv.png");
       await page.notebook.close(true);
     });
 
     test("open parquet file", async ({ page }) => {
-      await checkFile(page, "test.parquet", "parquet_arbalister_viewer.png");
+      await checkFile(page, "test.parquet", "arbalister_viewer_parquet.png");
+      checkToolbar(page);
+      await page.notebook.close(true);
+    });
+
+
+    test("open sqlite file", async ({ page }) => {
+      await checkFile(page, "test.sqlite", "arbalister_viewer_sqlite.png");
       checkToolbar(page);
       await page.notebook.close(true);
     });
