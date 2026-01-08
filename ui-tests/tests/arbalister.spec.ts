@@ -19,15 +19,15 @@ async function checkFile(page: IJupyterLabPageFixture, filename: string, snapsho
   });
 }
 
-async function checkToolbar(page:IJupyterLabPageFixture){
-   const text = page.getByTestId(`toolbar-group-cols-rows`);
-      await expect(text).toBeVisible();
-     
-      const rows = page.locator(".toolbar-group-cols-rows .toolbar-label:not(.cols)");
-      await expect(rows).toHaveText("3 rows;");
+async function checkToolbar(page: IJupyterLabPageFixture) {
+  const text = page.getByTestId(`toolbar-group-cols-rows`);
+  await expect(text).toBeVisible();
 
-      const cols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
-      await expect(cols).toHaveText("3 columns");
+  const rows = page.locator(".toolbar-group-cols-rows .toolbar-label:not(.cols)");
+  await expect(rows).toHaveText("3 rows;");
+
+  const cols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
+  await expect(cols).toHaveText("3 columns");
 }
 
 /**
