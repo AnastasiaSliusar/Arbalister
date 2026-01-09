@@ -75,7 +75,7 @@ test.describe
 
     test("open parquet file", async ({ page }) => {
       await checkFile(page, "test.parquet", "arbalister_viewer_parquet.png");
-      checkToolbar(page);
+      await checkToolbar(page);
       await page.notebook.close(true);
     });
   });
