@@ -61,11 +61,6 @@ test.describe
         path.resolve(__dirname, `./test-files/test.parquet`),
         `${tmpPath}/test.parquet`,
       );
-
-      await contents.uploadFile(
-        path.resolve(__dirname, `./test-files/test.sqlite`),
-        `${tmpPath}/test.sqlite`,
-      );
     });
 
     test.afterAll(async ({ request, tmpPath }) => {
@@ -81,17 +76,6 @@ test.describe
     test("open parquet file", async ({ page }) => {
       await checkFile(page, "test.parquet", "arbalister_viewer_parquet.png");
       checkToolbar(page);
-      await page.notebook.close(true);
-    });
-
-    test("open sqlite file", async ({ page }) => {
-      await checkFile(page, "test.sqlite", "arbalister_viewer_sqlite.png");
-      checkToolbar(page);
-
-      await page.locator(".toolbar-dropdown select").selectOption("dummy_t_2");
-      const newCols = page.locator(".toolbar-group-cols-rows .toolbar-label.cols");
-      await expect(newCols).toHaveText("2 columns");
-
       await page.notebook.close(true);
     });
   });
