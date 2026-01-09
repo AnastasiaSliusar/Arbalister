@@ -1,4 +1,4 @@
-import { expect, galata, IJupyterLabPageFixture, test } from "@jupyterlab/galata";
+import { expect, galata, type IJupyterLabPageFixture, test } from "@jupyterlab/galata";
 
 import path from "node:path";
 
